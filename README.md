@@ -1,2 +1,2 @@
 # esxi-exporter
-Prometheus ESXi exporter, which utilises the VMware SDK
+Prometheus exporter, which utilises the VMware SDK to get metrics from VMware ESXi.
