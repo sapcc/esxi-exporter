@@ -2,7 +2,7 @@
 Prometheus exporter, which utilises the VMware SDK to get metrics from VMware ESXi.
 
 ## About
-This is a prometheus exporter. It collects data of critical services via vCenter from esxi hosts in order to monitor them with prometheus/grafana.
+This is a criticial service exporter. It useses the vCenter pyVmomi SDK and ssh to retrieve critical serviceses of esxi-hosts in order to monitor them with prometheus.
 
 ## Getting started
 
@@ -19,6 +19,10 @@ This is a prometheus exporter. It collects data of critical services via vCenter
 - `disable_pyvim` disable pyVmomi service collector
 - `disable_ssh` disable ssh service collector
 Environments variables can be specified in Linux like this: `export "key"="value"` 
+- `netbox_url` the netbox url with `https://`
+- `cashtime` cashing the results from netbox for n minuites
+- `blacklisttime` when a ssh connection fails you can specify a timespan to blacklist the host in order to avoid locking the user because of too many login attempts 
+
 
 **Comandline args**
 - `-u` or `--user` the vCenter username
@@ -29,10 +33,12 @@ Environments variables can be specified in Linux like this: `export "key"="value
 - `-i` or `--workerid` the id of this worker 
 - `-x` or `--noPyVim`  disable pyVmomi service collector
 - `-z` or `--noSSH` disable ssh service collector
+- `-n` or `--netbox_url` the netbox url with `https://`
+- `-j` or `--cashtime` cashing the results from netbox for n minuites
+- `-i` or `--blacklisttime` when a ssh connection fails you can specify a timespan to blacklist the host in order to avoid locking the user because of too many login attempts 
 
-### SSH Balancing
-- The ssh service collector can be split into several docker containers
-- If you specify a worker count and a worker id starting by 0 the exporter will slice the available hosts and will only process the specified range wich will result by the hostcount divided by the workercount where the workerid is the index of the slice which will be processed
+
+
 
 
 ## Project Structure
@@ -41,20 +47,16 @@ Environments variables can be specified in Linux like this: `export "key"="value
 - prometheus-client
 - pyVmomi
 - Paramiko
+- pynetbox
+- requests 
 
 
 ## Collectors
 - pyVmomni collector collecting servies via vCenter API
 - sshCollector collecting missing servies via ssh and multithreading
 
-## What is collected
-**sshCollector**
-- hostd
-- nsx-opsagent
-- nsx-proxy
-- nsxa
-- vvold
+### Problem
+- Sadly vCenter does not offer all services we need. So we still have to use ssh.
 
-**pyVmomiCollector**
-- everything vCenter offers
-- eg ntp
+### Netbox
+- We use netbox to double check if a hosts is really _active_ and ready for use.
