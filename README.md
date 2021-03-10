@@ -47,7 +47,7 @@ Environments variables can be specified in Linux like this: `export "key"="value
 ### Requirements
 - prometheus-client
 - pyVmomi
-- Paramiko
+- paramiko
 - pynetbox
 - requests 
 
