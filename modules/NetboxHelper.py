@@ -1,0 +1,39 @@
+import datetime
+import logging
+from os import getenv
+
+import pynetbox
+import requests
+
+logger = logging.getLogger('esxi-exporter')
+
+
+class NetboxHelper:
+
+    def __init__(self):
+        session = requests.Session()
+        session.verify = False
+        self.netbox = pynetbox.api(getenv('netbox_url'))
+        self.netbox.http_session = session
+
+        self.hosts = set()
+        self.last_update = datetime.datetime.now()
+        self.region = getenv('vcenter_url').split(".")[2]
+
+    def is_host_active(self, host: str) -> bool:
+        if self.last_update + datetime.timedelta(minutes=int(getenv('cashtime', 60))) < datetime.datetime.now() or len(
+                self.hosts) == 0:
+            self.update_hosts(self.region)
+            self.last_update = datetime.datetime.now()
+        return host in self.hosts
+
+    def update_hosts(self, region: str):
+        logger.info("getting active hosts from netbox...")
+        try:
+            _hosts = []
+            for device in self.netbox.dcim.devices.filter(platform='vmware-esxi', region=region, status='active'):
+                _hosts.append(device.name)
+            self.hosts = _hosts.copy()
+            logger.info("%i active hosts in region" % len(self.hosts))
+        except Exception as ex:
+            logger.error("update hosts failed: %s" % str(ex))
