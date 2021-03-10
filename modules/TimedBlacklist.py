@@ -1,24 +1,24 @@
 import datetime
 
+import modules.Configuration as config
 
-class TimedBlacklist:
+duration_minutes = config.blacklisttime
+hosts = dict()
 
-    def __init__(self, minutes: int) -> None:
-        self.duration_minutes = minutes
-        self._hosts = dict()
+def add_host(hostname: str) -> None:
+    hosts[hostname] = datetime.datetime.now()
 
-    def add_host(self, hostname: str) -> None:
-        self._hosts[hostname] = datetime.datetime.now()
+def remove_host( hostname: str) -> None:
+    try:
+        hosts.pop(hostname)
+    except KeyError:
+        # just delete, if key does not exists this is also okay.
+        pass
 
-    def remove_host(self, hostname: str) -> None:
-        try:
-            self._hosts.pop(hostname)
-        except Exception:
-            pass
-
-    def is_host_allowed(self, hostname: str) -> bool:
-        try:
-            return self._hosts[hostname] + datetime.timedelta(
-                minutes=self.duration_minutes) < datetime.datetime.now()
-        except KeyError:
-            return True
+def is_host_allowed( hostname: str) -> bool:
+    try:
+        # check if time is already over
+        return hosts[hostname] + datetime.timedelta(
+            minutes=duration_minutes) < datetime.datetime.now()
+    except KeyError:
+        return True

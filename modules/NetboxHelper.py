@@ -4,7 +4,8 @@ import logging
 import pynetbox
 import requests
 
-from modules import Configuration
+import modules.Configuration as config
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -16,8 +17,7 @@ logger.addHandler(ch)
 
 class NetboxHelper:
 
-    def __init__(self, config: Configuration):
-        self.config = config
+    def __init__(self):
         session = requests.Session()
         session.verify = False
         self.netbox = pynetbox.api(config.netbox)
@@ -30,7 +30,7 @@ class NetboxHelper:
 
 
     def is_host_active(self, host: str) -> bool:
-        if  self.last_update + datetime.timedelta(minutes=self.config.cashtime) < datetime.datetime.now() or len(self.hosts) == 0:
+        if  self.last_update + datetime.timedelta(minutes=config.cashtime) < datetime.datetime.now() or len(self.hosts) == 0:
             self.update_hosts(self.region)
             self.last_update = datetime.datetime.now()
         return host in self.hosts

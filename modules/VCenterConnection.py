@@ -6,6 +6,7 @@ from pyVmomi import vim
 
 from modules.Exceptions import VCenterDNSException, VCenterLoginException
 
+
 # Init Logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

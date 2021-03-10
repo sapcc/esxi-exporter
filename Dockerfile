@@ -1,4 +1,5 @@
-FROM keppel.eu-de-1.cloud.sap/ccloud-dockerhub-mirror/library/python:3-alpine
+#FROM keppel.eu-de-1.cloud.sap/ccloud-dockerhub-mirror/library/python:3-alpine
+FROM python:3-alpine
 
 RUN apk --update add openssl ca-certificates build-base libxslt libffi-dev openssl-dev libxml2-dev libxslt-dev
 
@@ -9,4 +10,4 @@ RUN pip install --upgrade -r  exporter/requirements.txt
 
 RUN apk del build-base libffi-dev openssl-dev libxml2-dev libxslt-dev
 
-WORKDIR exporter/
+WORKDIR exporter/; exit 0

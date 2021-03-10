@@ -56,8 +56,8 @@ Environments variables can be specified in Linux like this: `export "key"="value
 - pyVmomni collector collecting services via vCenter API
 - sshCollector collecting missing services via ssh and multithreading
 
-### Problem
-- Sadly vCenter does not offer all services we need. So we still have to use ssh.
+### Problems
+- ssh is still required since vCenter does not offer all wanted services.
 
 ### Netbox
 - We use netbox to double check if a host is really _active_ and ready for use.

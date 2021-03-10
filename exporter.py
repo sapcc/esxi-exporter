@@ -7,7 +7,6 @@ from prometheus_client import REGISTRY, start_http_server
 
 from collectors.PyVimServiceCollector import PyVimServiceCollector
 from collectors.SshServiceCollector import SshServiceCollector
-from modules.Configuration import Configuration
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -16,6 +15,8 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
+import modules.Configuration as config 
+
 # disable ssl warning
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -23,7 +24,6 @@ class Exporter:
 
     def __init__(self):
         # load config
-        self.config = Configuration()
         self.successful_start: bool = False
 
     def run_prometheus_server(self, port: int) -> None:
@@ -37,12 +37,12 @@ class Exporter:
         start_http_server(port)
 
         # register collectors
-        if not self.config.pyVimDisable:
+        if not config.pyVimDisable:
             logger.info("registering collector: PyVimServiceCollector... ")
-            REGISTRY.register(PyVimServiceCollector(self.config))
-        if not self.config.sshDisable:
+            REGISTRY.register(PyVimServiceCollector())
+        if not config.sshDisable:
             logger.info("registering collector: sshServiceCollector...")
-            REGISTRY.register(SshServiceCollector(self.config))
+            REGISTRY.register(SshServiceCollector())
         logger.info("exporter is ready")
 
         # there was a succesful start
@@ -61,7 +61,7 @@ class Exporter:
         while True:
             # todo: catch critical exceptions and not critical exceptions
             try:
-                self.run_prometheus_server(self.config.port)
+                self.run_prometheus_server(config.port)
 
             except VCenterException:
                 logger.error("vCenter error occurred. Trying to restart application.")

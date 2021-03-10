@@ -3,8 +3,9 @@ import logging
 from prometheus_client.core import GaugeMetricFamily
 
 from BaseCollector import BaseCollector
-from modules.Configuration import Configuration
 from modules.VCenterConnection import VCenterConnection
+
+import modules.Configuration as config
 
 # init logging
 logger = logging.getLogger(__name__)
@@ -17,12 +18,12 @@ logger.addHandler(ch)
 
 class PyVimServiceCollector(BaseCollector):
 
-    def __init__(self, config: Configuration):
+    def __init__(self):
         """
         :param config: the configuration which provides credentials etc.
         """
 
-        self._config = config
+        config = config
         logger.info('connecting to vcenter: ' + config.vCenter)
         self._conn = VCenterConnection(config.vCenter, config.vCenter_username, config.vCenter_password)
 
@@ -37,14 +38,14 @@ class PyVimServiceCollector(BaseCollector):
                                          labels=['vcenter', 'host', 'service'])
 
         if not self._conn.is_alive():
-            self._conn = VCenterConnection(self.config.vCenter, self.config.vCenter_username,
-                                           self.config.vCenter_password)
+            self._conn = VCenterConnection(config.vCenter, config.vCenter_username,
+                                           config.vCenter_password)
 
         # get esxi hosts from vCenter
         hosts = self._conn.get_hosts()
         for host in hosts:
             services = host.configManager.serviceSystem.serviceInfo.service
             for service in services:
-                gauge_metric.add_metric(labels=[self._config.vCenter, host.name, service.key], value=service.running)
+                gauge_metric.add_metric(labels=[config.vCenter, host.name, service.key], value=service.running)
 
         yield gauge_metric

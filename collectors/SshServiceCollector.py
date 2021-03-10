@@ -7,11 +7,12 @@ import paramiko
 from prometheus_client.core import GaugeMetricFamily
 
 from BaseCollector import BaseCollector
-from modules.Configuration import Configuration
 from modules.Exceptions import SSHEsxiClientException, SshCollectorException
 from modules.NetboxHelper import NetboxHelper
 from modules.VCenterConnection import VCenterConnection
-from modules.TimedBlacklist import TimedBlacklist
+import modules.TimedBlacklist as blacklist
+
+import modules.Configuration as config
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -23,18 +24,15 @@ logger.addHandler(ch)
 
 class SshServiceCollector(BaseCollector):
 
-    def __init__(self, config: Configuration):
+    def __init__(self):
         """
         :param config: The config which provides credentials etc.
         """
-        self._config = config
-
         logger.info('connecting to vcenter: ' + config.vCenter)
         self._conn = VCenterConnection(config.vCenter, config.vCenter_username, config.vCenter_password)
-        self.netbox = NetboxHelper(self._config)
+        self.netbox = NetboxHelper(      )  
 
         self._results = {}
-        self._blacklist = TimedBlacklist(config.blacklisttime)
         self._tasks = Queue()
         self._monitoredServices = ['hostd', 'nsx-opsagent', 'nsx-proxy', 'nsxa', 'ntpd', 'vpxa', 'vvold']
 
@@ -50,7 +48,7 @@ class SshServiceCollector(BaseCollector):
 
     @staticmethod
     def ssh_worker(q: Queue, esxi_username: str, esxi_password: str, command: str, monitored_services: list,
-                   blacklist: TimedBlacklist, output: dict) -> None:
+                   output: dict) -> None:
         """
         To be used with a thread. Uses a queue as list of hosts to be monitored
 
@@ -59,7 +57,6 @@ class SshServiceCollector(BaseCollector):
         :param esxi_password: the ssh password to login into the esxi host
         :param command: the precompiled command which will run on all esxi in order to collect service stats
         :param monitored_services: a list of services to monitor
-        :param blacklist: a blacklists for hosts which failed to connect
         :param output: a dictionary where the collected data will be returned
         :return:
         """
@@ -83,17 +80,6 @@ class SshServiceCollector(BaseCollector):
                     if ('%s is running' % service) in answer:
                         output[host][service] = True
 
-            # Exceptions
-            # -----------
-            # AuthenticationException,
-            # BadAuthenticationType,
-            # BadHostKeyException,
-            # ChannelException,
-            # ConfigParseError,
-            # CouldNotCanonicalize,
-            # PasswordRequiredException,
-            # ProxyCommandFailure,
-            # SSHException,
 
             # Catch non critical exceptions otherwise crash... (eg ConfigParserError)            
             except (
@@ -114,8 +100,6 @@ class SshServiceCollector(BaseCollector):
         :return:
         """
 
-        starttime = datetime.now()
-
         # basically a template for a gauge metric
         # todo: is this state label there correct? if not see also other collectors
         gauge_metric = GaugeMetricFamily('esxi_ssh_service_state', '1=running, 0=stopped',
@@ -123,15 +107,15 @@ class SshServiceCollector(BaseCollector):
 
         # check connection state
         if not self._conn.is_alive():
-            self._conn = VCenterConnection(self._config.vCenter, self._config.vCenter_username,
-                                           self._config.vCenter_password)
+            self._conn = VCenterConnection(config.vCenter, config.vCenter_username,
+                                           config.vCenter_password)
 
         # get hosts
         hosts = self._conn.get_hosts()
 
         # filter hosts (netbox > active)
         hosts = [host for host in hosts if
-                 self.netbox.is_host_active(host.name.split('.')[0]) and self._blacklist.is_host_allowed(host.name)]
+                 self.netbox.is_host_active(host.name.split('.')[0]) and blacklist.is_host_allowed(host.name)]
         logger.info('vCenter returned %i hosts' % len(hosts))
 
         # init results
@@ -146,10 +130,10 @@ class SshServiceCollector(BaseCollector):
 
         # Creates a thread pool
         threads = []
-        for i in range(self._config.ssh_threads):
+        for i in range(config.ssh_threads):
             t = Thread(target=SshServiceCollector.ssh_worker, args=(
-                self._tasks, self._config.esxi_username, self._config.esxi_password, self._query_command,
-                self._monitoredServices, self._blacklist, self._results))
+                self._tasks, config.esxi_username, config.esxi_password, self._query_command,
+                self._monitoredServices, self._results))
             t.start()
             threads.append(t)
 
@@ -159,9 +143,6 @@ class SshServiceCollector(BaseCollector):
         # build metric
         for host, services in self._results.items():
             for svc_name, svc_state in services.items():
-                gauge_metric.add_metric(labels=[self._config.vCenter, host, svc_name], value=svc_state)
-
-        deltatime = datetime.now() - starttime
-        logger.info('operation took %i seconds' % deltatime.seconds)
+                gauge_metric.add_metric(labels=[config.vCenter, host, svc_name], value=svc_state)
 
         yield gauge_metric
