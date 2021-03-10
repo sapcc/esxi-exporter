@@ -52,7 +52,7 @@ Environments variables can be specified in Linux like this: `export "key"="value
 - requests 
 
 
-## Collectors
+### Collectors
 - pyVmomni collector collecting services via vCenter API
 - sshCollector collecting missing services via ssh and multithreading
 
