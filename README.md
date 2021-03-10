@@ -60,4 +60,4 @@ Environments variables can be specified in Linux like this: `export "key"="value
 - Sadly vCenter does not offer all services we need. So we still have to use ssh.
 
 ### Netbox
-- We use netbox to double check if a hosts is really _active_ and ready for use.
+- We use netbox to double check if a host is really _active_ and ready for use.
