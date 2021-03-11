@@ -20,7 +20,7 @@ class EsxiOnlineStateCollector(BaseCollector):
         starttime = datetime.datetime.now()
 
         gauge_metric = GaugeMetricFamily('esxi_online_state', '1=online, 0=offline',
-                                         labels=['vcenter', 'host', 'origin'])
+                                         labels=['vcenter', 'hostsystem', 'origin'])
 
         # get all hosts from vcenter
         vc_hosts = self.get_vcenter_hosts()

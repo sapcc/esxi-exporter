@@ -89,7 +89,7 @@ class SshServiceCollector(BaseCollector):
 
         # basically a template for a gauge metric
         gauge_metric = GaugeMetricFamily('esxi_ssh_service_state', '1=running, 0=stopped',
-                                         labels=['vcenter', 'host', 'service'])
+                                         labels=['vcenter', 'hostsystem', 'service'])
 
         # get hosts
         hosts = self.get_active_hosts()

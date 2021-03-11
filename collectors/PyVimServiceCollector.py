@@ -22,7 +22,7 @@ class PyVimServiceCollector(BaseCollector):
         """
 
         gauge_metric = GaugeMetricFamily('esxi_pyvim_service_state', '1=running, 0=stopped',
-                                         labels=['vcenter', 'host', 'service'])
+                                         labels=['vcenter', 'hostsystem', 'service'])
 
         # get esxi hosts from vCenter
         hosts = self.get_active_hosts()
