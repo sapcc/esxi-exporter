@@ -10,7 +10,6 @@ from prometheus_client.core import GaugeMetricFamily
 import modules.TimedBlacklist as blacklist
 from BaseCollector import BaseCollector
 from modules.Exceptions import SSHEsxiClientException
-import modules.Decorators as decorators
 
 logger = logging.getLogger('esxi-exporter')
 
@@ -67,8 +66,8 @@ class SshServiceCollector(BaseCollector):
                         output[host][service] = True
 
             # Catch non critical exceptions otherwise crash... (eg paramiko.ConfigParserError)
-            except (
-            paramiko.BadAuthenticationType, paramiko.AuthenticationException, paramiko.PasswordRequiredException) as ex:
+            except (paramiko.BadAuthenticationType, paramiko.AuthenticationException,
+                    paramiko.PasswordRequiredException) as ex:
                 logger.warning("Could not ssh login to: %s. Reason: %s" % (host, str(ex)))
                 blacklist.add_host(host)
             except (paramiko.BadHostKeyException, paramiko.ChannelException, paramiko.SSHException,
@@ -115,5 +114,3 @@ class SshServiceCollector(BaseCollector):
                 gauge_metric.add_metric(labels=[getenv('vcenter_url'), host, svc_name], value=svc_state)
 
         yield gauge_metric
-
-

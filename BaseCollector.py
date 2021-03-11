@@ -8,6 +8,7 @@ from modules.VCenterConnection import VCenterConnection
 
 logger = logging.getLogger('esxi-exporter')
 
+
 class BaseCollector(ABC):
 
     def __init__(self) -> None:
@@ -22,7 +23,6 @@ class BaseCollector(ABC):
     def _check_connection(self) -> None:
         if not self.vCenter.is_alive():
             self.vCenter = VCenterConnection(getenv('vcenter_url'), getenv('vcenter_user'), getenv('vcenter_password'))
-
 
     def get_active_hosts(self) -> list:
         self._check_connection()
