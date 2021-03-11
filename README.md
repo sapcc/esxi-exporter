@@ -6,9 +6,9 @@ This is a critical service exporter. It uses the vCenter pyVmomi SDK and ssh to 
 
 ## Getting started
 
-- Simply start the `exporter.py` with python.
 - Required information can be passed by environment variables
 - Environments variables can be specified in Linux like this: `export "key"="value"` 
+- Simply start the `exporter.py` with python.
 
 **Environment variables**
 - `vcenter_user` the vCenter username
