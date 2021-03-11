@@ -4,7 +4,6 @@ from os import getenv
 
 from prometheus_client.core import GaugeMetricFamily
 
-import modules.TimedBlacklist as blacklist
 from BaseCollector import BaseCollector
 
 # init logging
@@ -19,17 +18,21 @@ class EsxiOnlineStateCollector(BaseCollector):
     def collect(self):
         starttime = datetime.datetime.now()
 
-        gauge_metric = GaugeMetricFamily('esxi_online_state', '1=online, 0=offline',
-                                         labels=['vcenter', 'hostsystem', 'origin'])
+        gauge_metric = GaugeMetricFamily('esxi_overall_state', '0=unknown 1=red, 2=orange, 3=green',
+                                         labels=['vcenter', 'hostsystem'])
 
         # get all hosts from vcenter
         vc_hosts = self.get_vcenter_hosts()
         for host in vc_hosts:
-            nb_state = self.netbox.is_host_active(host.name.split('.')[0])
-            gauge_metric.add_metric(labels=[getenv('vcenter_url'), host.name, 'netbox'], value=nb_state)
-
-            bl_state = blacklist.is_host_allowed(host.name)
-            gauge_metric.add_metric(labels=[getenv('vcenter_url'), host.name, 'ssh_connection'], value=bl_state)
+            if host.overallStatus == 'green':
+                state = 3
+            elif host.overallStatus == 'orange':
+                state = 2
+            elif host.overallStatus == 'red':
+                state = 1
+            else:
+                state = 0
+            gauge_metric.add_metric(labels=[getenv('vcenter_url'), host.name, 'ssh_connection'], value=state)
 
         print((datetime.datetime.now() - starttime))
 

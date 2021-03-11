@@ -9,7 +9,7 @@ from prometheus_client import REGISTRY, start_http_server
 
 from collectors.PyVimServiceCollector import PyVimServiceCollector
 from collectors.SshServiceCollector import SshServiceCollector
-from collectors.EsxiOnlineStateCollector import EsxiOnlineStateCollector
+from collectors.EsxiOverallStateCollector import  EsxiOnlineStateCollector
 from modules.Exceptions import VCenterException
 
 # init logger once
@@ -44,8 +44,9 @@ class Exporter:
         if not bool(getenv('disable_ssh', False)):
             logger.info("registering collector: sshServiceCollector...")
             REGISTRY.register(SshServiceCollector())
-        logger.info('registering collector: EsxiOnlineStateCollector')
+        logger.info("registering collector: EsxiOverallStateCollector...")
         REGISTRY.register(EsxiOnlineStateCollector())
+
         logger.info("exporter is ready")
 
         # stay alive
