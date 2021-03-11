@@ -2,11 +2,14 @@ import logging
 import time
 from os import getenv
 
+import os
+
 import urllib3
 from prometheus_client import REGISTRY, start_http_server
 
 from collectors.PyVimServiceCollector import PyVimServiceCollector
 from collectors.SshServiceCollector import SshServiceCollector
+from collectors.EsxiOnlineStateCollector import EsxiOnlineStateCollector
 from modules.Exceptions import VCenterException
 
 # init logger once
@@ -23,9 +26,6 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class Exporter:
 
-    def __init__(self):
-        # load config
-        self.successful_start: bool = False
 
     def run_prometheus_server(self, port: int) -> None:
         """
@@ -44,37 +44,24 @@ class Exporter:
         if not bool(getenv('disable_ssh', False)):
             logger.info("registering collector: sshServiceCollector...")
             REGISTRY.register(SshServiceCollector())
+        logger.info('registering collector: EsxiOnlineStateCollector')
+        REGISTRY.register(EsxiOnlineStateCollector())
         logger.info("exporter is ready")
-
-        # there was a successful start
-        # so there is a working config and the app can try to restart
-        # if it looses its connection
-        self.successful_start = True
 
         # stay alive
         while True:
             time.sleep(1)
 
     def run(self):
-        # try to restart if there was at least one successful start
-        # eg if the vCenter is not reachable but goes online later again
-        # this container will automatically reconnect
-        while True:
-            # todo: catch critical exceptions and not critical exceptions
             try:
                 self.run_prometheus_server(int(getenv('exporter_port', 1234)))
 
             except VCenterException:
                 logger.error("vCenter error occurred. Trying to restart application.")
-                if not self.successful_start:
-                    exit(0)
-                time.sleep(180)
-                continue
 
             except Exception as ex:
                 logger.critical(ex)
                 raise ex
-
 
 if __name__ == '__main__':
     Exporter().run()
