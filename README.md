@@ -12,16 +12,16 @@ The term services relates to linux-services like `hostd` or `ntp`. Esxi means es
 - Simply start the `exporter.py` with python.
 
 **Environment variables**
-- `vcenter_user` the vCenter username
-- `vcenter_password` the vCenter password
-- `vcenter_url` the vCenter url without `https://`
-- `exporter_port` the port the exporter should listen on
-- `ssh_workercount` the workercount of ssh service collectors
-- `disable_pyvim` disable pyVmomi service collector
-- `disable_ssh` disable ssh service collector
-- `netbox_url` the netbox url with `https://`
-- `cashtime` cashing the results from netbox for n minutes
-- `blacklisttime` when a ssh connection fails you can specify a timespan to blacklist the host in order to avoid locking the user because of too many login attempts 
+- `vcenter_user` the vCenter username - required
+- `vcenter_password` the vCenter password - required
+- `vcenter_url` the vCenter url without `https://` - required
+- `exporter_port` the port the exporter should listen on - default: 1234 
+- `ssh_workercount` the workercount of ssh service collectors - default: 10
+- `disable_pyvim` disable pyVmomi service collector - optional, 0 or 1
+- `disable_ssh` disable ssh service collector - optional, 0 or 1
+- `netbox_url` the netbox url with `https://` - required
+- `cashtime` cashing the results from netbox for n minutes - default 60min
+- `blacklisttime` when a ssh connection fails you can specify a timespan to blacklist the host in order to avoid locking the user because of too many login attempts - default 20 min 
 
 ### Recomendation
 - The current approch is to disable the `pyVimServiceCollector` since it does not offer all services of interest and the ssh approach works pretty fast (200 esxi in 30sec) as long as there are not too many services to be monitored. So all load belongs to the ssh service collector. 
