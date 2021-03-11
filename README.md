@@ -8,9 +8,9 @@ This is a critical service exporter. It uses the vCenter pyVmomi SDK and ssh to 
 
 - Simply start the `exporter.py` with python.
 - Required information can be passed by environment variables
+- Environments variables can be specified in Linux like this: `export "key"="value"` 
 
 **Environment variables**
-
 - `vcenter_user` the vCenter username
 - `vcenter_password` the vCenter password
 - `vcenter_url` the vCenter url without `https://`
@@ -19,7 +19,6 @@ This is a critical service exporter. It uses the vCenter pyVmomi SDK and ssh to 
 - `ssh_workerid` the id of this worker
 - `disable_pyvim` disable pyVmomi service collector
 - `disable_ssh` disable ssh service collector
-Environments variables can be specified in Linux like this: `export "key"="value"` 
 - `netbox_url` the netbox url with `https://`
 - `cashtime` cashing the results from netbox for n minutes
 - `blacklisttime` when a ssh connection fails you can specify a timespan to blacklist the host in order to avoid locking the user because of too many login attempts 
