@@ -16,7 +16,6 @@ class EsxiOnlineStateCollector(BaseCollector):
         super().__init__()
 
     def collect(self):
-        starttime = datetime.datetime.now()
 
         gauge_metric = GaugeMetricFamily('esxi_overall_state', '0=unknown 1=red, 2=orange, 3=green',
                                          labels=['vcenter', 'hostsystem'])
@@ -33,7 +32,5 @@ class EsxiOnlineStateCollector(BaseCollector):
             else:
                 state = 0
             gauge_metric.add_metric(labels=[getenv('vcenter_url'), host.name, 'ssh_connection'], value=state)
-
-        print((datetime.datetime.now() - starttime))
 
         yield gauge_metric
