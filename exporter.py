@@ -44,8 +44,9 @@ class Exporter:
         if not bool(getenv('disable_ssh', False)):
             logger.info("registering collector: sshServiceCollector...")
             REGISTRY.register(SshServiceCollector())
-        logger.info("registering collector: EsxiOverallStateCollector...")
-        REGISTRY.register(EsxiOnlineStateCollector())
+        if not bool(getenv('disable_overallstate', False)):
+            logger.info("registering collector: EsxiOverallStateCollector...")
+            REGISTRY.register(EsxiOnlineStateCollector())
 
         logger.info("exporter is ready")
 
@@ -64,5 +65,38 @@ class Exporter:
                 logger.critical(ex)
                 raise ex
 
+    def check_config(self):
+        # Optional: 'esxi_user', 'port', 'cashtime', 'blacklisttime
+        logger.info('checking configuration...')
+        str_env = ('vcenter_user', 'vcenter_password', 'vcenter_url' , 'esxi_password', 'netbox_url')
+        for item in str_env:
+            if os.getenv(item) == None:
+                logger.critical('A environment variable of type string is missing: %s' % item)
+                exit(0)
+
+        int_env = ('port', 'cashtime', 'blacklisttime', 'ssh_workercount')
+        for item in int_env:
+            try:
+                if os.getenv(item) != None and not isinstance(int(os.getenv(item)), int):
+                    logger.critical('The environment variable is not instance of int: %s' % item)
+                    exit(0)
+            except TypeError:
+                logger.critical('The environment variable is not instance of int: %s' % item)
+                exit(0)
+
+        bool_env = ('disable_pyvim', 'disable_ssh', 'disable_overallstate')
+        for item in int_env:
+            try:
+                if os.getenv(item) != None and not isinstance(bool(os.getenv(item)), bool):
+                    logger.critical('The environment variable is not instance of boolean: %s' % item)
+                    exit(0)
+            except TypeError:
+                logger.critical('The environment variable is not instance of boolean: %s' % item)
+                exit(0)
+
+        logger.info('configuration tests passed')
+
 if __name__ == '__main__':
-    Exporter().run()
+    exporter = Exporter()
+    exporter.check_config()
+    exporter.run()
