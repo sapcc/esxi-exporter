@@ -16,7 +16,6 @@ class EsxiOnlineStateCollector(BaseCollector):
     def __init__(self) -> None:
         super().__init__()
 
-    @classmethod
     def worker(q: Queue, output: dict):
         while not q.empty():
             host = q.get()
@@ -37,7 +36,9 @@ class EsxiOnlineStateCollector(BaseCollector):
         [q.put(host) for host in vc_hosts]
 
         for i in range(getenv('vc_workercount', 10)):
-            t = Thread(target=self.worker, args=(q, results))
+            t = Thread(target=EsxiOnlineStateCollector.worker, args=(q, results))
+            threads.append(t)
+            t.start()
 
         [t.join() for t in threads]
 
@@ -51,6 +52,6 @@ class EsxiOnlineStateCollector(BaseCollector):
                 state = 1
             else:
                 state = 0
-            gauge_metric.add_metric(labels=[getenv('vcenter_url'), host.name, 'ssh_connection'], value=state)
+            gauge_metric.add_metric(labels=[getenv('vcenter_url'), host, 'ssh_connection'], value=state)
 
         yield gauge_metric
