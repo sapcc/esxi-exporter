@@ -1,6 +1,7 @@
-import datetime
 import logging
 from os import getenv
+from queue import Queue
+from threading import Thread
 
 from prometheus_client.core import GaugeMetricFamily
 
@@ -15,6 +16,12 @@ class EsxiOnlineStateCollector(BaseCollector):
     def __init__(self) -> None:
         super().__init__()
 
+    @classmethod
+    def worker(q: Queue, output: dict):
+        while not q.empty():
+            host = q.get()
+            output[host.name] = host.overallStatus
+
     def collect(self):
 
         gauge_metric = GaugeMetricFamily('esxi_overall_state', '0=unknown 1=red, 2=orange, 3=green',
@@ -22,12 +29,25 @@ class EsxiOnlineStateCollector(BaseCollector):
 
         # get all hosts from vcenter
         vc_hosts = self.get_vcenter_hosts()
-        for host in vc_hosts:
-            if host.overallStatus == 'green':
+
+        # prepare multithreading
+        threads = []
+        results = {}
+        q = Queue()
+        [q.put(host) for host in vc_hosts]
+
+        for i in range(getenv('vc_workercount', 10)):
+            t = Thread(target=self.worker, args=(q, results))
+
+        [t.join() for t in threads]
+
+        # parse results
+        for host, value in results.items():
+            if value == 'green':
                 state = 3
-            elif host.overallStatus == 'orange':
+            elif value == 'orange':
                 state = 2
-            elif host.overallStatus == 'red':
+            elif value == 'red':
                 state = 1
             else:
                 state = 0
