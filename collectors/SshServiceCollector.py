@@ -19,10 +19,12 @@ class SshServiceCollector(BaseCollector):
     def __init__(self):
         super().__init__()
 
-        self._monitoredServices = ['hostd', 'nsx-opsagent', 'nsx-proxy', 'nsxa', 'ntpd', 'vpxa', 'vvold']
+        self._monitoredServices = [
+            'hostd', 'nsx-opsagent', 'nsx-proxy', 'nsxa', 'ntpd', 'vpxa', 'vvold']
         logger.info("monitoring: " + ', '.join(self._monitoredServices))
 
-        command_list = ["/etc/init.d/%s status" % service for service in self._monitoredServices]
+        command_list = ["/etc/init.d/%s status" %
+                        service for service in self._monitoredServices]
         self._query_command: str = ' & '.join(command_list)
         logger.info('compiled ssh command: ' + self._query_command)
 
@@ -53,7 +55,8 @@ class SshServiceCollector(BaseCollector):
                 # connect
                 client = paramiko.SSHClient()
                 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                client.connect(hostname=host, username=esxi_username, password=esxi_password)
+                client.connect(
+                    hostname=host, username=esxi_username, password=esxi_password)
 
                 # fetch data
                 stdin, stdout, stderr = client.exec_command(command, timeout=2)
@@ -68,11 +71,13 @@ class SshServiceCollector(BaseCollector):
             # Catch non critical exceptions otherwise crash... (eg paramiko.ConfigParserError)
             except (paramiko.BadAuthenticationType, paramiko.AuthenticationException,
                     paramiko.PasswordRequiredException) as ex:
-                logger.warning("Could not ssh login to: %s. Reason: %s" % (host, str(ex)))
+                logger.warning(
+                    "Could not ssh login to: %s. Reason: %s" % (host, str(ex)))
                 blacklist.add_host(host)
             except (paramiko.BadHostKeyException, paramiko.ChannelException, paramiko.SSHException,
                     paramiko.ProxyCommandFailure) as ex:
-                logger.warning("Couldn't ssh connect to esxi-host via ssh: %s. Reason: %s" % (host, str(ex)))
+                logger.warning(
+                    "Couldn't ssh connect to esxi-host via ssh: %s. Reason: %s" % (host, str(ex)))
             except Exception as ex:
                 logger.error(str(ex))
                 raise SSHEsxiClientException(str(ex)) from ex
@@ -100,7 +105,8 @@ class SshServiceCollector(BaseCollector):
         threads = []
         for i in range(int(getenv('ssh_threads', 10))):
             t = Thread(target=SshServiceCollector.ssh_worker, args=(
-                tasks, getenv('esxi_user', 'root'), getenv('esxi_password'), self._query_command,
+                tasks, getenv('esxi_user', 'root'), getenv(
+                    'esxi_password'), self._query_command,
                 self._monitoredServices, results))
             t.start()
             threads.append(t)
@@ -111,6 +117,7 @@ class SshServiceCollector(BaseCollector):
         # build metric
         for host, services in results.items():
             for svc_name, svc_state in services.items():
-                gauge_metric.add_metric(labels=[getenv('vcenter_url'), host, svc_name], value=svc_state)
+                gauge_metric.add_metric(
+                    labels=[getenv('vcenter_url'), host, svc_name], value=svc_state)
 
         yield gauge_metric
