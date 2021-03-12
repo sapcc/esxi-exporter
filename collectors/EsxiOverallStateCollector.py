@@ -46,7 +46,7 @@ class EsxiOnlineStateCollector(BaseCollector):
         for host, value in results.items():
             if value == 'green':
                 state = 3
-            elif value == 'orange':
+            elif value == 'yellow':
                 state = 2
             elif value == 'red':
                 state = 1
