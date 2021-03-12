@@ -56,11 +56,6 @@ class Exporter:
     def run(self):
         try:
             self.run_prometheus_server(int(getenv('exporter_port', 1234)))
-
-        except VCenterException:
-            logger.error(
-                "vCenter error occurred. Trying to restart application.")
-
         except Exception as ex:
             logger.critical(ex)
             raise ex
