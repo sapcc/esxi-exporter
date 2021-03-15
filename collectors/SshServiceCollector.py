@@ -118,6 +118,6 @@ class SshServiceCollector(BaseCollector):
         for host, services in results.items():
             for svc_name, svc_state in services.items():
                 gauge_metric.add_metric(
-                    labels=[getenv('vcenter_url'), host, svc_name], value=svc_state)
+                    labels=[getenv('VCENTER_URL'), host, svc_name], value=svc_state)
 
         yield gauge_metric

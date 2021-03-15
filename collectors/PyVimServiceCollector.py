@@ -29,6 +29,6 @@ class PyVimServiceCollector(BaseCollector):
         for host in hosts:
             services = host.configManager.serviceSystem.serviceInfo.service
             for service in services:
-                gauge_metric.add_metric(labels=[getenv('vcenter_url'), host.name, service.key], value=service.running)
+                gauge_metric.add_metric(labels=[getenv('VCENTER_URL'), host.name, service.key], value=service.running)
 
         yield gauge_metric

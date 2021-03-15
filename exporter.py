@@ -37,13 +37,13 @@ class Exporter:
         start_http_server(port)
 
         # register collectors
-        if not bool(getenv('disable_pyvim', False)):
+        if not bool(getenv('DISABLE_PYVIM', False)):
             logger.info("registering collector: PyVimServiceCollector... ")
             REGISTRY.register(PyVimServiceCollector())
-        if not bool(getenv('disable_ssh', False)):
+        if not bool(getenv('DISABLE_SSH', False)):
             logger.info("registering collector: sshServiceCollector...")
             REGISTRY.register(SshServiceCollector())
-        if not bool(getenv('disable_overallstate', False)):
+        if not bool(getenv('DISABLE_OVERALLSTATE', False)):
             logger.info("registering collector: EsxiOverallStateCollector...")
             REGISTRY.register(EsxiOnlineStateCollector())
 
@@ -55,24 +55,24 @@ class Exporter:
 
     def run(self):
         try:
-            self.run_prometheus_server(int(getenv('exporter_port', 1234)))
+            self.run_prometheus_server(int(getenv('EXPORTER_PORT', 1234)))
         except Exception as ex:
             logger.critical(ex)
             raise ex
 
     def check_config(self):
-        # Optional: 'esxi_user', 'port', 'cashtime', 'blacklisttime
+        # Optional: 'esxi_user', 'port', 'CASHTIME', 'BLACKLISTTIME
         logger.info('checking configuration...')
-        str_env = ('vcenter_user', 'vcenter_password',
-                   'vcenter_url', 'esxi_password', 'netbox_url')
+        str_env = ('VCENTER_USER', 'VCENTER_PASSWORD',
+                   'VCENTER_URL', 'esxi_password', 'NETBOX_URL')
         for item in str_env:
             if os.getenv(item) == None:
                 logger.critical(
                     'A environment variable of type string is missing: %s' % item)
                 exit(0)
 
-        int_env = ('port', 'cashtime', 'blacklisttime',
-                   'ssh_workercount', 'vc_workercount')
+        int_env = ('port', 'CASHTIME', 'BLACKLISTTIME',
+                   'SSH_WORKERCOUNT', 'VC_WORKERCOUNT')
         for item in int_env:
             try:
                 if os.getenv(item) != None and not isinstance(int(os.getenv(item)), int):
@@ -84,7 +84,7 @@ class Exporter:
                     'The environment variable is not instance of int: %s' % item)
                 exit(0)
 
-        bool_env = ('disable_pyvim', 'disable_ssh', 'disable_overallstate')
+        bool_env = ('DISABLE_PYVIM', 'DISABLE_SSH', 'DISABLE_OVERALLSTATE')
         for item in int_env:
             try:
                 if os.getenv(item) != None and not isinstance(bool(os.getenv(item)), bool):

@@ -4,7 +4,7 @@ from os import getenv
 
 logger = logging.getLogger('esxi-exporter')
 
-duration_minutes = int(getenv('blacklisttime', 20))
+duration_minutes = int(getenv('BLACKLISTTIME', 20))
 hosts = dict()
 
 

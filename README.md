@@ -12,18 +12,18 @@ The term services relates to linux-services like `hostd` or `ntp`. Esxi means es
 - Simply start the `exporter.py` with python.
 
 **Environment variables**
-- `vcenter_user` the vCenter username - required
-- `vcenter_password` the vCenter password - required
-- `vcenter_url` the vCenter url without `https://` - required
-- `exporter_port` the port the exporter should listen on - default: 1234 
-- `ssh_workercount` the workercount of ssh service collectors - default: 10
-- `vc_workercount` the workercount of esxi overall state collectors - default: 10
-- `disable_pyvim` disable pyVmomi service collector - optional, 0 or 1
-- `disable_ssh` disable ssh service collector - optional, 0 or 1
-- `disable_overallstate` disable esxi overall state collector - optional, 0 or 1
-- `netbox_url` the netbox url with `https://` - required
-- `cashtime` cashing the results from netbox for n minutes - default 60min
-- `blacklisttime` when a ssh connection fails you can specify a timespan to blacklist the host in order to avoid locking the user because of too many login attempts - default 20 min 
+- `VCENTER_USER` the vCenter username - required
+- `VCENTER_PASSWORD` the vCenter password - required
+- `VCENTER_URL` the vCenter url without `https://` - required
+- `EXPORTER_PORT` the port the exporter should listen on - default: 1234 
+- `SSH_WORKERCOUNT` the workercount of ssh service collectors - default: 10
+- `VC_WORKERCOUNT` the workercount of esxi overall state collectors - default: 10
+- `DISABLE_PYVIM` disable pyVmomi service collector - optional, 0 or 1
+- `DISABLE_SSH` disable ssh service collector - optional, 0 or 1
+- `DISABLE_OVERALLSTATE` disable esxi overall state collector - optional, 0 or 1
+- `NETBOX_URL` the netbox url with `https://` - required
+- `CASHTIME` cashing the results from netbox for n minutes - default 60min
+- `BLACKLISTTIME` when a ssh connection fails you can specify a timespan to blacklist the host in order to avoid locking the user because of too many login attempts - default 20 min 
 
 ## Changing monitored services
 - This regards to the ssh-collector
