@@ -12,7 +12,6 @@ logger = logging.getLogger('esxi-exporter')
 class BaseCollector(ABC):
 
     def __init__(self) -> None:
-        super().__init__()
         self.vCenter = VCenterConnection(getenv('VCENTER_URL'), getenv('VCENTER_USER'), getenv('VCENTER_PASSWORD'))
         self.netbox = NetboxHelper()
 
