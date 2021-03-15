@@ -1,0 +1,6 @@
+port: 9666
+cashtime: 60
+blacklisttime: 20
+collectors:
+  - ssh
+  - overallstate

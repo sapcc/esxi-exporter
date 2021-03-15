@@ -1,10 +1,11 @@
 import datetime
 import logging
-from os import getenv
+
+import modules.Configuration as config
 
 logger = logging.getLogger('esxi-exporter')
 
-duration_minutes = int(getenv('BLACKLISTTIME', 20))
+duration_minutes = config.blacklisttime
 hosts = dict()
 
 

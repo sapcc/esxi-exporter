@@ -103,7 +103,7 @@ class SshServiceCollector(BaseCollector):
         threads = []
         for i in range(int(getenv('ssh_threads', 10))):
             t = Thread(target=SshServiceCollector.ssh_worker, args=(
-                tasks, getenv('esxi_user', 'root'), getenv('esxi_password'), self._query_command,
+                tasks, getenv('ESXI_USER', 'root'), getenv('ESXI_PASSWORD'), self._query_command,
                 self._monitoredServices, results))
             t.start()
             threads.append(t)

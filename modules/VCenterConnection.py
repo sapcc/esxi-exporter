@@ -11,7 +11,7 @@ logger = logging.getLogger('esxi-exporter')
 
 
 # inspired by pyCCloud VCenterHelper
-class VCenterConnection:
+class VcenterConnection:
     def __init__(self, host: str, user: str, password: str, verify_ssl: bool = False):
         self.api = None
         self.host = host
