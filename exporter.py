@@ -49,7 +49,6 @@ class Exporter:
 
         logger.info("exporter is ready")
 
-        # stay alive
         while True:
             time.sleep(1)
 
