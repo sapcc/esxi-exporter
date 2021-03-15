@@ -37,3 +37,7 @@ class BaseCollector(ABC):
         self._check_connection()
         hosts = self.vCenter.get_hosts()
         return hosts
+
+    @abstractmethod
+    def describe(self):
+        pass

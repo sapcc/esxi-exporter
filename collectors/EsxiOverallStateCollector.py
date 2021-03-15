@@ -21,6 +21,9 @@ class EsxiOnlineStateCollector(BaseCollector):
             host = q.get()
             output[host.name] = host.overallStatus
 
+    def describe(self):
+        yield GaugeMetricFamily('esxi_overall_state', 'overall health status of esxi-host collected from vCenter')
+
     def collect(self):
 
         gauge_metric = GaugeMetricFamily('esxi_overall_state', '0=unknown 1=red, 2=orange, 3=green',

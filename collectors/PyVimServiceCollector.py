@@ -14,6 +14,9 @@ class PyVimServiceCollector(BaseCollector):
     def __init__(self) -> None:
         super().__init__()
 
+    def describe(self):
+        yield GaugeMetricFamily('esxi_pyvim_service_state', 'health status of esxi-host services collected via pyVmomi')
+
     def collect(self):
         """
         Collects information about critical esxi host services

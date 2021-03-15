@@ -77,6 +77,9 @@ class SshServiceCollector(BaseCollector):
                 logger.error(str(ex))
                 raise SSHEsxiClientException(str(ex)) from ex
 
+    def describe(self):
+        yield GaugeMetricFamily('esxi_ssh_service_state', 'health status of esxi-host services collected via ssh')
+
     def collect(self):
         """
         Collects data about critical services from esxi-hosts via a ssh connection
