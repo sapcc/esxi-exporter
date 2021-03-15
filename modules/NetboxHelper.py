@@ -23,7 +23,7 @@ class NetboxHelper:
         self.region = getenv('VCENTER_URL').split(".")[2]
 
     def is_host_active(self, host: str) -> bool:
-        if self.last_update + timedelta(minutes=config.cashtime) < datetime.now() or len(self.hosts) == 0:
+        if self.last_update + timedelta(minutes=config.cachetime) < datetime.now() or len(self.hosts) == 0:
             self.update_hosts(self.region)
             self.last_update = datetime.now()
         return host in self.hosts

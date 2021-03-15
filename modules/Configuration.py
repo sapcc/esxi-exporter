@@ -9,7 +9,7 @@ try:
         data = yaml.safe_load(f)
 
     port: int = int(data['port'])
-    cashtime: int = int(data['cashtime'])
+    cachetime: int = int(data['cachetime'])
     blacklisttime: str = int(data['blacklisttime'])
     enable_pyvim: bool = 'pyvim' in data['collectors']
     enable_ssh: bool = 'ssh' in data['collectors']
