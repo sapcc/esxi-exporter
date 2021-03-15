@@ -30,11 +30,11 @@ class VCenterConnection:
         try:
             self.api = self._connect_class(protocol='https', host=self.host, user=self.user, pwd=self.password)
             logger.info('successfuly logged into vCenter')
-        except socket.gaierror as ex:
+        except socket.gaierror:
             message = 'Name or service not known: %s' % self.host
             logger.error(message)
             raise VCenterDNSException(message)
-        except vim.fault.InvalidLogin as ex:
+        except vim.fault.InvalidLogin:
             message = 'Wrong credentials %s' % self.host
             logger.error(message)
             raise VCenterLoginException
