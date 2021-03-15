@@ -1,16 +1,17 @@
 import logging
+import os
 import time
 from os import getenv
-
-import os
 
 import urllib3
 from prometheus_client import REGISTRY, start_http_server
 
+from collectors.EsxiOverallStateCollector import EsxiOnlineStateCollector
 from collectors.PyVimServiceCollector import PyVimServiceCollector
 from collectors.SshServiceCollector import SshServiceCollector
-from collectors.EsxiOverallStateCollector import EsxiOnlineStateCollector
-from modules.Exceptions import VCenterException
+
+# disable ssl warning
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # init logger once
 logger = logging.getLogger('esxi-exporter')
@@ -20,8 +21,6 @@ formatter = logging.Formatter('[%(asctime)s] [%(levelname)s] %(message)s')
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
-# disable ssl warning
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 
@@ -51,13 +50,14 @@ def run_prometheus_server(port: int) -> None:
     while True:
         time.sleep(1)
 
+
 def check_config():
     # Optional: 'esxi_user', 'PORT', 'CASHTIME', 'BLACKLISTTIME
     logger.info('checking configuration...')
     str_env = ('VCENTER_USER', 'VCENTER_PASSWORD',
                'VCENTER_URL', 'ESXI_PASSWORD', 'NETBOX_URL')
     for item in str_env:
-        if os.getenv(item) == None:
+        if os.getenv(item) is None:
             logger.critical(
                 'A environment variable of type string is missing: %s' % item)
             exit(0)
@@ -66,7 +66,7 @@ def check_config():
                'SSH_WORKERCOUNT', 'VC_WORKERCOUNT')
     for item in int_env:
         try:
-            if os.getenv(item) != None and not isinstance(int(os.getenv(item)), int):
+            if os.getenv(item) is not None and not isinstance(int(os.getenv(item)), int):
                 logger.critical(
                     'The environment variable is not instance of int: %s' % item)
                 exit(0)
@@ -75,10 +75,9 @@ def check_config():
                 'The environment variable is not instance of int: %s' % item)
             exit(0)
 
-    bool_env = ('DISABLE_PYVIM', 'DISABLE_SSH', 'DISABLE_OVERALLSTATE')
     for item in int_env:
         try:
-            if os.getenv(item) != None and not isinstance(bool(os.getenv(item)), bool):
+            if os.getenv(item) is not None and not isinstance(bool(os.getenv(item)), bool):
                 logger.critical(
                     'The environment variable is not instance of boolean: %s' % item)
                 exit(0)
@@ -88,7 +87,6 @@ def check_config():
             exit(0)
 
     logger.info('configuration tests passed')
-
 
 
 if __name__ == '__main__':
