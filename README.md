@@ -15,16 +15,10 @@ The term services relates to linux-services like `hostd` or `ntp`. ESXi means es
 **Environment variables**
 - `VCENTER_USER` the vCenter username - required
 - `VCENTER_PASSWORD` the vCenter password - required
+- `ESXI_USER` the ESXi-host ssh username - required
+- `ESXI_PASSWORD` the ESXi-host ssh password - required
 - `VCENTER_URL` the vCenter url without `https://` - required
-- `EXPORTER_PORT` the port the exporter should listen on - default: 1234 
-- `SSH_WORKERCOUNT` the workercount of ssh service collectors - default: 10
-- `VC_WORKERCOUNT` the workercount of esxi overall state collectors - default: 10
-- `DISABLE_PYVIM` disable pyVmomi service collector - optional, 0 or 1
-- `DISABLE_SSH` disable ssh service collector - optional, 0 or 1
-- `DISABLE_OVERALLSTATE` disable esxi overall state collector - optional, 0 or 1
 - `NETBOX_URL` the netbox url with `https://` - required
-- `CASHTIME` cashing the results from netbox for n minutes - default 60min
-- `BLACKLISTTIME` when a ssh connection fails you can specify a timespan to blacklist the host in order to avoid locking the user because of too many login attempts - default 20 min 
 
 ## Changing monitored services
 - This regards to the ssh-collector
@@ -46,7 +40,7 @@ self._monitoredServices = [
 ### Collectors
 - _pyVmomni service collector_: utilising pyVmomi to get services of esxi-hostsystems from vCenter. Does not return all services of interest. 
 - _ssh service Collector_: collecting missing services via ssh and multithreading
-- _esxi overall state collector_: collecting vCenter "overallstate" of esxi-hostsystems
+- _esxi overall state collector_: collecting vCenter "overall_state" of esxi-hostsystems
 
 ### Problems
 - ssh is still required since vCenter does not offer all wanted services.

@@ -13,8 +13,11 @@ try:
     blacklisttime: str = int(data['blacklisttime'])
     enable_pyvim: bool = 'pyvim' in data['collectors']
     enable_ssh: bool = 'ssh' in data['collectors']
-    enable_overall_state: bool = 'overallstate' in data['collectors']
-    ssh_services: list = data['sshcollector']['services']
+    enable_overall_state: bool = 'overall_state' in data['collectors']
+    ssh_services: list = data['ssh_collector']['services']
+    ssh_threads: int = int(data['ssh_collector']['thread_count'])
+    overallstate_threads: int = int(
+        data['overall_state_collector']['thread_count'])
     del data
 
 except KeyError as ex:

@@ -6,6 +6,7 @@ from threading import Thread
 from prometheus_client.core import GaugeMetricFamily
 
 from BaseCollector import BaseCollector
+import modules.Configuration as config
 
 # init logging
 logger = logging.getLogger('esxi-exporter')
@@ -38,7 +39,7 @@ class EsxiOnlineStateCollector(BaseCollector):
         q = Queue()
         [q.put(host) for host in vc_hosts]
 
-        for i in range(getenv('VC_WORKERCOUNT', 10)):
+        for i in range(config.overallstate_threads):
             t = Thread(target=EsxiOnlineStateCollector.worker, args=(q, results))
             threads.append(t)
             t.start()

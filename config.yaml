@@ -3,8 +3,9 @@ cachetime: 60
 blacklisttime: 20
 collectors:
   - ssh
-  - overallstate
-sshcollector:
+  - overall_state
+ssh_collector:
+  thread_count: 10
   services:
     - hostd
     - nsx-opsagent
@@ -13,3 +14,5 @@ sshcollector:
     - ntpd
     - vpxa
     - vvold
+overall_state_collector:
+  thread_count: 10
