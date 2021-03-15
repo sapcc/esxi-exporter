@@ -13,7 +13,7 @@ from collectors.EsxiOverallStateCollector import EsxiOnlineStateCollector
 from modules.Exceptions import VCenterException
 
 # init logger once
-logger = logger = logging.getLogger('esxi-exporter')
+logger = logging.getLogger('esxi-exporter')
 logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('[%(asctime)s] [%(levelname)s] %(message)s')
