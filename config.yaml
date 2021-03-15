@@ -4,3 +4,12 @@ blacklisttime: 20
 collectors:
   - ssh
   - overallstate
+sshcollector:
+  services:
+    - hostd
+    - nsx-opsagent
+    - nsx-proxy
+    - nsxa
+    - ntpd
+    - vpxa
+    - vvold

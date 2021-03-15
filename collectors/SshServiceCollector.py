@@ -10,6 +10,7 @@ from prometheus_client.core import GaugeMetricFamily
 import modules.TimedBlacklist as blacklist
 from BaseCollector import BaseCollector
 from modules.Exceptions import SSHEsxiClientException
+import modules.Configuration as config
 
 logger = logging.getLogger('esxi-exporter')
 
@@ -19,7 +20,7 @@ class SshServiceCollector(BaseCollector):
     def __init__(self):
         super().__init__()
 
-        self._monitoredServices = ['hostd', 'nsx-opsagent', 'nsx-proxy', 'nsxa', 'ntpd', 'vpxa', 'vvold']
+        self._monitoredServices = config.ssh_services
         logger.info("monitoring: " + ', '.join(self._monitoredServices))
 
         command_list = ["/etc/init.d/%s status" % service for service in self._monitoredServices]

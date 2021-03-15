@@ -14,6 +14,7 @@ try:
     enable_pyvim: bool = 'pyvim' in data['collectors']
     enable_ssh: bool = 'ssh' in data['collectors']
     enable_overall_state: bool = 'overallstate' in data['collectors']
+    ssh_services: list = data['sshcollector']['services']
     del data
 
 except KeyError as ex:
