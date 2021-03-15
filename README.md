@@ -43,14 +43,6 @@ self._monitoredServices = [
 
 ## Project Structure
 
-### Requirements
-- prometheus-client
-- pyVmomi
-- paramiko
-- pynetbox
-- requests 
-
-
 ### Collectors
 - _pyVmomni service collector_: utilising pyVmomi to get services of esxi-hostsystems from vCenter. Does not return all services of interest. 
 - _ssh service Collector_: collecting missing services via ssh and multithreading
