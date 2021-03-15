@@ -25,6 +25,17 @@ The term services relates to linux-services like `hostd` or `ntp`. Esxi means es
 - `cashtime` cashing the results from netbox for n minutes - default 60min
 - `blacklisttime` when a ssh connection fails you can specify a timespan to blacklist the host in order to avoid locking the user because of too many login attempts - default 20 min 
 
+## Changing monitored services
+- This regards to the ssh-collector
+- Open the `SshServiceCollector` file in the `collectors` folder
+- Modify the following line:
+
+
+```python
+self._monitoredServices = [
+    'hostd', 'nsx-opsagent', 'nsx-proxy', 'nsxa', 'ntpd', 'vpxa', 'vvold']
+```
+
 ### Recomendation
 - The current approch is to disable the `pyVimServiceCollector` since it does not offer all services of interest and the ssh approach works pretty fast (200 esxi in 30sec) as long as there are not too many services to be monitored. So all load belongs to the ssh service collector. 
 
