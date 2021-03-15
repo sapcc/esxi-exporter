@@ -3,7 +3,8 @@ Prometheus exporter, which utilises the VMware SDK to get metrics from VMware ES
 
 ## About
 This is a critical service exporter. It uses the vCenter pyVmomi SDK and ssh to retrieve critical services of esxi-hosts in order to monitor them with prometheus.
-The term services relates to linux-services like `hostd` or `ntp`. Esxi means esxi-hostsystem.
+The term services relates to linux-services like `hostd` or `ntp`. ESXi means esxi-hostsystem.
+
 
 ## Getting started
 
