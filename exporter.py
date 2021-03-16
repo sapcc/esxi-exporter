@@ -1,3 +1,4 @@
+import importlib
 import logging
 import os
 import time
@@ -8,7 +9,7 @@ import urllib3
 from prometheus_client import REGISTRY, start_http_server
 
 import modules.Configuration as config
-from collectors.EsxiOverallStateCollector import EsxiOnlineStateCollector
+from collectors.EsxiOverallStateCollector import EsxiOverallStateCollector
 from collectors.PyVimServiceCollector import PyVimServiceCollector
 from collectors.SshServiceCollector import SshServiceCollector
 
@@ -40,22 +41,38 @@ def run_prometheus_server(port: int) -> None:
     logger.info("starting http server...")
     start_http_server(port)
 
-    # register collectors
-    if config.enable_pyvim:
-        logger.info("registering collector: PyVimServiceCollector... ")
-        REGISTRY.register(PyVimServiceCollector())
-    if config.enable_ssh:
-        logger.info("registering collector: sshServiceCollector...")
-        REGISTRY.register(SshServiceCollector())
-    if config.enable_overall_state:
-        logger.info("registering collector: EsxiOverallStateCollector...")
-        REGISTRY.register(EsxiOnlineStateCollector())
+    for collector in get_collectors():
+        logger.info(f"registering collector: {collector.__name__.split('.')[-1]}")
+        REGISTRY.register(collector())
 
     logger.info("exporter is ready")
 
     while True:
         time.sleep(1)
 
+
+# https://github.com/sapcc/vrops-exporter/blob/master/exporter.py#L92-L105
+def get_collectors() -> list:
+    """
+    Get all collectors which are named in config.yaml > collectors section
+
+    :return: list of BaseCollector classes
+    """
+
+    results = []
+    for collector_name in config.collectors:
+        try:
+            class_module = importlib.import_module(f'collectors.{collector_name}')
+        except ModuleNotFoundError as ex:
+            logger.error(f'No module {collector_name} defined. {ex}')
+            return None
+
+        try:
+            results.append(class_module.__getattribute__(collector_name))
+        except AttributeError as ex:
+            logger.error(f'Unable to get class {collector_name}. {ex}')
+            return None
+    return results
 
 def check_env_vars():
     logger.info('checking environment variables...')
@@ -66,6 +83,8 @@ def check_env_vars():
             exit(0)
 
     logger.info('All environment variables are set.')
+
+
 
 
 if __name__ == '__main__':

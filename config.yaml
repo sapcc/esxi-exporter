@@ -2,8 +2,9 @@ port: 9666
 cachetime: 60
 blacklisttime: 20
 collectors:
-  - ssh
-  - overall_state
+# As the classname
+  - EsxiOverallStateCollector
+  - SshServiceCollector
 ssh_collector:
   thread_count: 10
   services:

@@ -12,7 +12,7 @@ import modules.Configuration as config
 logger = logging.getLogger('esxi-exporter')
 
 
-class EsxiOnlineStateCollector(BaseCollector):
+class EsxiOverallStateCollector(BaseCollector):
 
     def __init__(self) -> None:
         super().__init__()
@@ -40,7 +40,7 @@ class EsxiOnlineStateCollector(BaseCollector):
         [q.put(host) for host in vc_hosts]
 
         for i in range(config.overallstate_threads):
-            t = Thread(target=EsxiOnlineStateCollector.worker,
+            t = Thread(target=EsxiOverallStateCollector.worker,
                        args=(q, results))
             threads.append(t)
             t.start()
