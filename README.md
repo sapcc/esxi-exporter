@@ -20,17 +20,13 @@ The term services relates to linux-services like `hostd` or `ntp`. ESXi means es
 - `VCENTER_URL` the vCenter url without `https://` - required
 - `NETBOX_URL` the netbox url with `https://` - required
 
-## Changing monitored services
-- This regards to the ssh-collector
-- Open the `SshServiceCollector` file in the `collectors` folder
-- Modify the following line:
+**Command-line arguments**
+- `-d` or `--debug` sets logger on debug output
 
 
-```python
-self._monitoredServices = [
-    'hostd', 'nsx-opsagent', 'nsx-proxy', 'nsxa', 'ntpd', 'vpxa', 'vvold']
-```
-
+### Configuration
+- Open the `config yaml.`
+- If you enable collectors ensure that the classname matches the filename.
 ### Recomendation
 - The current approch is to disable the `pyVimServiceCollector` since it does not offer all services of interest and the ssh approach works pretty fast (200 esxi in 30sec) as long as there are not too many services to be monitored. So all load belongs to the ssh service collector. 
 
