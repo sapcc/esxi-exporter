@@ -71,16 +71,22 @@ class SshServiceCollector(BaseCollector):
 
             # Catch non critical exceptions otherwise crash... (eg paramiko.ConfigParserError)
             except (
-            paramiko.BadAuthenticationType, paramiko.AuthenticationException,
-            paramiko.PasswordRequiredException) as ex:
+                paramiko.BadAuthenticationType,
+                paramiko.AuthenticationException,
+                paramiko.PasswordRequiredException
+            ) as ex:
                 logger.warning(
                     "Could not ssh login to: %s. Reason: %s" % (host, str(ex)))
                 blacklist.add_host(host)
-            except (paramiko.BadHostKeyException, paramiko.ChannelException,
-                    paramiko.SSHException, paramiko.ProxyCommandFailure) as ex:
+            except (
+                paramiko.BadHostKeyException,
+                paramiko.ChannelException,
+                paramiko.SSHException,
+                paramiko.ProxyCommandFailure
+            ) as ex:
                 logger.warning(
-                    "Couldn't ssh connect to esxi-host via ssh: %s. Reason: %s" % (
-                    host, str(ex)))
+                    "Couldn't ssh connect to esxi-host via ssh: %s. Reason: %s" %
+                    (host, str(ex)))
             except Exception as ex:
                 logger.error(str(ex))
                 raise SSHEsxiClientException(str(ex)) from ex
