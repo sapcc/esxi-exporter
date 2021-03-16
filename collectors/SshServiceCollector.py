@@ -23,10 +23,14 @@ class SshServiceCollector(BaseCollector):
         self._monitoredServices = config.ssh_services
         logger.debug("monitoring: " + ', '.join(self._monitoredServices))
 
+        # nsx-opsagent will be returned as 'opsAgent is running'...
         command_list = ["/etc/init.d/%s status" % service for service in
                         self._monitoredServices]
         self._query_command: str = ' & '.join(command_list)
-        logger.debug('compiled ssh command: ' + self._query_command)
+
+        # because of nsx-opsagent becoming 'opsAgent is running'
+        self._monitoredServices = [item.replace(
+            'nsx-opsagent', 'opsAgent') for item in self._monitoredServices]
 
     @staticmethod
     def ssh_worker(hosts: Queue, esxi_username: str, esxi_password: str,
@@ -64,10 +68,15 @@ class SshServiceCollector(BaseCollector):
                 answer = stdout.read().decode("utf-8")
                 client.close()
 
+                logger.debug(host + '\n' + answer)
+                answer = answer.splitlines()
+
                 # parse data
                 for service in monitored_services:
-                    if ('%s is running' % service) in answer:
-                        output[host][service] = True
+                    for line in answer:
+                        if service in line and 'is running' in line:
+                            output[host][service] = True
+                            break
 
             # Catch non critical exceptions otherwise crash... (eg paramiko.ConfigParserError)
             except (

@@ -10,6 +10,9 @@ import modules.TimedBlacklist as blacklist
 logger = logging.getLogger('esxi-exporter')
 
 
+_single_netbox: NetboxHelper = None
+
+
 class BaseCollector(ABC):
 
     def __init__(self) -> None:
@@ -17,7 +20,12 @@ class BaseCollector(ABC):
                                          getenv('VCENTER_USER'),
                                          getenv('VCENTER_PASSWORD'))
 
-        self.netbox = NetboxHelper()
+        global _single_netbox
+        if _single_netbox is None:
+            self.netbox = NetboxHelper()
+            _single_netbox = self.netbox
+        else:
+            self.netbox = _single_netbox
 
     @abstractmethod
     def collect(self):

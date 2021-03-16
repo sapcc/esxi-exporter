@@ -33,8 +33,7 @@ class NetboxHelper:
         logger.debug("getting active hosts from netbox...")
         try:
             _hosts = []
-            for device in self.netbox.dcim.devices.filter(
-                    platform='vmware-esxi', region=region, status='active'):
+            for device in self.netbox.dcim.devices.filter(platform='vmware-esxi', region=region, status='active'):
                 _hosts.append(device.name)
             self.hosts = _hosts.copy()
             logger.debug("%i active hosts in region" % len(self.hosts))
