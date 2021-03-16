@@ -21,7 +21,8 @@ The term services relates to linux-services like `hostd` or `ntp`. ESXi means es
 - `NETBOX_URL` the netbox url with `https://` - required
 
 **Command-line arguments**
-- `-d` or `--debug` sets logger on debug output
+- `-d` or `--debug` sets logger to debug output
+- `-v` or `--info` sets logger to info output
 
 
 ### Configuration

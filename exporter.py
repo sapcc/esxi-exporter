@@ -17,11 +17,15 @@ logger = logging.getLogger('esxi-exporter')
 parser = OptionParser()
 parser.add_option("-d", "--debug", dest="debug", help="enable debug output",
                   action="store_true")
+parser.add_option("-v", "--info", dest="info", help="enable info output",
+                  action="store_true")
 (options, args) = parser.parse_args()
 if options.debug:
     logger.setLevel(logging.DEBUG)
-else:
+elif options.info:
     logger.setLevel(logging.INFO)
+else:
+    logger.setLevel(logging.WARNING)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('[%(asctime)s] [%(levelname)s] %(message)s')
 ch.setFormatter(formatter)
@@ -35,11 +39,11 @@ def run_prometheus_server(port: int) -> None:
     """
 
     # startup prometheus server
-    logger.info("starting http server...")
+    logger.debug("starting http server...")
     start_http_server(port)
 
     for collector in get_collectors():
-        logger.info(
+        logger.debug()(
             f"registering collector: {collector.__name__.split('.')[-1]}")
         REGISTRY.register(collector())
 
@@ -75,17 +79,17 @@ def get_collectors() -> list:
 
 
 def check_env_vars():
-    logger.info('checking environment variables...')
+    logger.debug('checking environment variables...')
     str_env = (
-    'VCENTER_USER', 'VCENTER_PASSWORD', 'VCENTER_URL', 'ESXI_PASSWORD',
-    'NETBOX_URL')
+        'VCENTER_USER', 'VCENTER_PASSWORD', 'VCENTER_URL', 'ESXI_PASSWORD',
+        'NETBOX_URL')
     for item in str_env:
         if os.getenv(item) is None:
             logger.critical(
                 'A environment variable of type string is missing: %s' % item)
             exit(0)
 
-    logger.info('All environment variables are set.')
+    logger.debug('All environment variables are set.')
 
 
 if __name__ == '__main__':

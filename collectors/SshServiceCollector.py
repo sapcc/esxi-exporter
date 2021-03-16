@@ -21,12 +21,12 @@ class SshServiceCollector(BaseCollector):
         super().__init__()
 
         self._monitoredServices = config.ssh_services
-        logger.info("monitoring: " + ', '.join(self._monitoredServices))
+        logger.debug("monitoring: " + ', '.join(self._monitoredServices))
 
         command_list = ["/etc/init.d/%s status" % service for service in
                         self._monitoredServices]
         self._query_command: str = ' & '.join(command_list)
-        logger.info('compiled ssh command: ' + self._query_command)
+        logger.debug('compiled ssh command: ' + self._query_command)
 
     @staticmethod
     def ssh_worker(hosts: Queue, esxi_username: str, esxi_password: str,
