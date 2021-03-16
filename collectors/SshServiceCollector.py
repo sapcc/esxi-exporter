@@ -23,10 +23,11 @@ class SshServiceCollector(BaseCollector):
         self._monitoredServices = config.ssh_services
         logger.debug("monitoring: " + ', '.join(self._monitoredServices))
 
-        # nsx-opsagent will be returned as 'opsAgent is running'...
+        # nsx-opsagent will be returned as 'opsgent is running'...
         command_list = ["/etc/init.d/%s status" % service for service in
                         self._monitoredServices]
         self._query_command: str = ' & '.join(command_list)
+        logger.debug('compiled ssh command: ' + self._query_command)
 
         # because of nsx-opsagent becoming 'opsAgent is running'
         self._monitoredServices = [item.replace(
@@ -68,7 +69,6 @@ class SshServiceCollector(BaseCollector):
                 answer = stdout.read().decode("utf-8")
                 client.close()
 
-                logger.debug(host + '\n' + answer)
                 answer = answer.splitlines()
 
                 # parse data
