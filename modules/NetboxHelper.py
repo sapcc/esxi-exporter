@@ -30,7 +30,7 @@ class NetboxHelper:
         return host in self.hosts
 
     def update_hosts(self, region: str):
-        logger.debug()("getting active hosts from netbox...")
+        logger.debug("getting active hosts from netbox...")
         try:
             _hosts = []
             for device in self.netbox.dcim.devices.filter(

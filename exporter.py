@@ -42,7 +42,7 @@ def run_prometheus_server(port: int) -> None:
     start_http_server(port)
 
     for collector in get_collectors():
-        logger.debug()(
+        logger.debug(
             f"registering collector: {collector.__name__.split('.')[-1]}")
         REGISTRY.register(collector())
 
