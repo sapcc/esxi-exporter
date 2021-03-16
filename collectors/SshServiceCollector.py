@@ -1,15 +1,15 @@
-import logging
 from collections import defaultdict
 from os import getenv
 from queue import Queue
 from threading import Thread
-
-import paramiko
 from prometheus_client.core import GaugeMetricFamily
-
-import modules.TimedBlacklist as blacklist
 from BaseCollector import BaseCollector
 from modules.Exceptions import SSHEsxiClientException
+
+
+import logging
+import paramiko
+import modules.TimedBlacklist as blacklist
 import modules.Configuration as config
 
 logger = logging.getLogger('esxi-exporter')

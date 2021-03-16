@@ -1,10 +1,10 @@
+from pyVmomi import vim
+from modules.Exceptions import VCenterDNSException, VCenterLoginException
+
 import logging
 import socket
-
 import pyVim.connect
-from pyVmomi import vim
 
-from modules.Exceptions import VCenterDNSException, VCenterLoginException
 
 # Init Logging
 logger = logging.getLogger('esxi-exporter')

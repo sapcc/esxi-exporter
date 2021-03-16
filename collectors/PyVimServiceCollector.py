@@ -1,9 +1,9 @@
-import logging
 from os import getenv
-
 from prometheus_client.core import GaugeMetricFamily
-
 from BaseCollector import BaseCollector
+
+import logging
+
 
 # init logging
 logger = logging.getLogger('esxi-exporter')

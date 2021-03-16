@@ -1,12 +1,11 @@
+from optparse import OptionParser
+from prometheus_client import REGISTRY, start_http_server
+
 import importlib
 import logging
 import os
 import time
-from optparse import OptionParser
-
 import urllib3
-from prometheus_client import REGISTRY, start_http_server
-
 import modules.Configuration as config
 
 # disable ssl warning

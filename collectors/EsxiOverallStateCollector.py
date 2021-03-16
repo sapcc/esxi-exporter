@@ -1,12 +1,11 @@
-import logging
 from os import getenv
 from queue import Queue
 from threading import Thread
-
 from prometheus_client.core import GaugeMetricFamily
-
-import modules.Configuration as config
 from BaseCollector import BaseCollector
+
+import logging
+import modules.Configuration as config
 
 # init logging
 logger = logging.getLogger('esxi-exporter')

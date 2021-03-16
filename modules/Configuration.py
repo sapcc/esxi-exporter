@@ -1,5 +1,4 @@
 import logging
-
 import yaml
 
 logger = logging.getLogger('esxi-exporter')

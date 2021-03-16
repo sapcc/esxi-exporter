@@ -1,10 +1,9 @@
-import logging
 from datetime import datetime, timedelta
 from os import getenv
 
+import logging
 import pynetbox
 import requests
-
 import modules.Configuration as config
 
 logger = logging.getLogger('esxi-exporter')

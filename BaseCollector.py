@@ -1,10 +1,11 @@
-import logging
 from abc import ABC, abstractmethod
 from os import getenv
-
-import modules.TimedBlacklist as blacklist
 from modules.NetboxHelper import NetboxHelper
 from modules.VcenterConnection import VcenterConnection
+
+import logging
+import modules.TimedBlacklist as blacklist
+
 
 logger = logging.getLogger('esxi-exporter')
 

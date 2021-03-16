@@ -1,6 +1,5 @@
 import datetime
 import logging
-
 import modules.Configuration as config
 
 logger = logging.getLogger('esxi-exporter')
