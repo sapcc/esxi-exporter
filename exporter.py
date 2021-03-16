@@ -3,15 +3,11 @@ import logging
 import os
 import time
 from optparse import OptionParser
-from os import getenv
 
 import urllib3
 from prometheus_client import REGISTRY, start_http_server
 
 import modules.Configuration as config
-from collectors.EsxiOverallStateCollector import EsxiOverallStateCollector
-from collectors.PyVimServiceCollector import PyVimServiceCollector
-from collectors.SshServiceCollector import SshServiceCollector
 
 # disable ssl warning
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -19,7 +15,8 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # init logger once
 logger = logging.getLogger('esxi-exporter')
 parser = OptionParser()
-parser.add_option("-d", "--debug", dest="debug", help="enable debug output", action="store_true")
+parser.add_option("-d", "--debug", dest="debug", help="enable debug output",
+                  action="store_true")
 (options, args) = parser.parse_args()
 if options.debug:
     logger.setLevel(logging.DEBUG)
@@ -42,7 +39,8 @@ def run_prometheus_server(port: int) -> None:
     start_http_server(port)
 
     for collector in get_collectors():
-        logger.info(f"registering collector: {collector.__name__.split('.')[-1]}")
+        logger.info(
+            f"registering collector: {collector.__name__.split('.')[-1]}")
         REGISTRY.register(collector())
 
     logger.info("exporter is ready")
@@ -62,7 +60,8 @@ def get_collectors() -> list:
     results = []
     for collector_name in config.collectors:
         try:
-            class_module = importlib.import_module(f'collectors.{collector_name}')
+            class_module = importlib.import_module(
+                f'collectors.{collector_name}')
         except ModuleNotFoundError as ex:
             logger.error(f'No module {collector_name} defined. {ex}')
             return None
@@ -74,17 +73,19 @@ def get_collectors() -> list:
             return None
     return results
 
+
 def check_env_vars():
     logger.info('checking environment variables...')
-    str_env = ('VCENTER_USER', 'VCENTER_PASSWORD', 'VCENTER_URL', 'ESXI_PASSWORD', 'NETBOX_URL')
+    str_env = (
+    'VCENTER_USER', 'VCENTER_PASSWORD', 'VCENTER_URL', 'ESXI_PASSWORD',
+    'NETBOX_URL')
     for item in str_env:
         if os.getenv(item) is None:
-            logger.critical('A environment variable of type string is missing: %s' % item)
+            logger.critical(
+                'A environment variable of type string is missing: %s' % item)
             exit(0)
 
     logger.info('All environment variables are set.')
-
-
 
 
 if __name__ == '__main__':

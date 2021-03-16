@@ -15,7 +15,8 @@ class PyVimServiceCollector(BaseCollector):
         super().__init__()
 
     def describe(self):
-        yield GaugeMetricFamily('esxi_pyvim_service_state', 'health status of esxi-host services collected via pyVmomi')
+        yield GaugeMetricFamily('esxi_pyvim_service_state',
+                                'health status of esxi-host services collected via pyVmomi')
 
     def collect(self):
         """
@@ -24,14 +25,18 @@ class PyVimServiceCollector(BaseCollector):
         :return: yield GaugeMetricFamily
         """
 
-        gauge_metric = GaugeMetricFamily('esxi_pyvim_service_state', '1=running, 0=stopped',
-                                         labels=['vcenter', 'hostsystem', 'service'])
+        gauge_metric = GaugeMetricFamily('esxi_pyvim_service_state',
+                                         '1=running, 0=stopped',
+                                         labels=['vcenter', 'hostsystem',
+                                                 'service'])
 
         # get esxi hosts from vCenter
         hosts = self.get_active_hosts()
         for host in hosts:
             services = host.configManager.serviceSystem.serviceInfo.service
             for service in services:
-                gauge_metric.add_metric(labels=[getenv('VCENTER_URL'), host.name, service.key], value=service.running)
+                gauge_metric.add_metric(
+                    labels=[getenv('VCENTER_URL'), host.name, service.key],
+                    value=service.running)
 
         yield gauge_metric

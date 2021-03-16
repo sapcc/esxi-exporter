@@ -5,8 +5,8 @@ from threading import Thread
 
 from prometheus_client.core import GaugeMetricFamily
 
-from BaseCollector import BaseCollector
 import modules.Configuration as config
+from BaseCollector import BaseCollector
 
 # init logging
 logger = logging.getLogger('esxi-exporter')
@@ -23,11 +23,13 @@ class EsxiOverallStateCollector(BaseCollector):
             output[host.name] = host.overallStatus
 
     def describe(self):
-        yield GaugeMetricFamily('esxi_overall_state', 'overall health status of esxi-host collected from vCenter')
+        yield GaugeMetricFamily('esxi_overall_state',
+                                'overall health status of esxi-host collected from vCenter')
 
     def collect(self):
 
-        gauge_metric = GaugeMetricFamily('esxi_overall_state', '0=unknown 1=red, 2=orange, 3=green',
+        gauge_metric = GaugeMetricFamily('esxi_overall_state',
+                                         '0=unknown 1=red, 2=orange, 3=green',
                                          labels=['vcenter', 'hostsystem'])
 
         # get all hosts from vcenter
@@ -58,6 +60,7 @@ class EsxiOverallStateCollector(BaseCollector):
             else:
                 state = 0
             gauge_metric.add_metric(
-                labels=[getenv('VCENTER_URL'), host, 'ssh_connection'], value=state)
+                labels=[getenv('VCENTER_URL'), host, 'ssh_connection'],
+                value=state)
 
         yield gauge_metric

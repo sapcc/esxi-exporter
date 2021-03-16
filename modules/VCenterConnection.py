@@ -12,7 +12,8 @@ logger = logging.getLogger('esxi-exporter')
 
 # inspired by pyCCloud VCenterHelper
 class VcenterConnection:
-    def __init__(self, host: str, user: str, password: str, verify_ssl: bool = False):
+    def __init__(self, host: str, user: str, password: str,
+                 verify_ssl: bool = False):
         self.api = None
         self.host = host
         self.user = user
@@ -28,8 +29,8 @@ class VcenterConnection:
     def login(self):
         logger.info('vCenter logging in...')
         try:
-            self.api = self._connect_class(
-                protocol='https', host=self.host, user=self.user, pwd=self.password)
+            self.api = self._connect_class(protocol='https', host=self.host,
+                                           user=self.user, pwd=self.password)
             logger.info('successfuly logged into vCenter')
         except socket.gaierror:
             message = 'Name or service not known: %s' % self.host
@@ -41,8 +42,8 @@ class VcenterConnection:
             raise VCenterLoginException
 
     def get_hosts(self):
-        host_view = self.api.content.viewManager.CreateContainerView(self.api.content.rootFolder, [vim.HostSystem],
-                                                                     True)
+        host_view = self.api.content.viewManager.CreateContainerView(
+            self.api.content.rootFolder, [vim.HostSystem], True)
         host_list = [host for host in host_view.view]
         host_view.Destroy()
         return host_list

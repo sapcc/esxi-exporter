@@ -25,7 +25,8 @@ def remove_host(hostname: str) -> None:
 def is_host_allowed(hostname: str) -> bool:
     try:
         # check if time is already over
-        if hosts[hostname] + datetime.timedelta(minutes=duration_minutes) < datetime.datetime.now():
+        if hosts[hostname] + datetime.timedelta(
+                minutes=duration_minutes) < datetime.datetime.now():
             remove_host(hostname)
             return True
         else:

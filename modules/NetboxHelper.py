@@ -1,5 +1,5 @@
-from datetime import datetime, timedelta
 import logging
+from datetime import datetime, timedelta
 from os import getenv
 
 import pynetbox
@@ -23,7 +23,9 @@ class NetboxHelper:
         self.region = getenv('VCENTER_URL').split(".")[2]
 
     def is_host_active(self, host: str) -> bool:
-        if self.last_update + timedelta(minutes=config.cachetime) < datetime.now() or len(self.hosts) == 0:
+        if self.last_update + timedelta(
+                minutes=config.cachetime) < datetime.now() or len(
+                self.hosts) == 0:
             self.update_hosts(self.region)
             self.last_update = datetime.now()
         return host in self.hosts
@@ -32,7 +34,8 @@ class NetboxHelper:
         logger.info("getting active hosts from netbox...")
         try:
             _hosts = []
-            for device in self.netbox.dcim.devices.filter(platform='vmware-esxi', region=region, status='active'):
+            for device in self.netbox.dcim.devices.filter(
+                    platform='vmware-esxi', region=region, status='active'):
                 _hosts.append(device.name)
             self.hosts = _hosts.copy()
             logger.info("%i active hosts in region" % len(self.hosts))

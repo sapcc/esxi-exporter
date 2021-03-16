@@ -23,13 +23,14 @@ class SshServiceCollector(BaseCollector):
         self._monitoredServices = config.ssh_services
         logger.info("monitoring: " + ', '.join(self._monitoredServices))
 
-        command_list = ["/etc/init.d/%s status" %
-                        service for service in self._monitoredServices]
+        command_list = ["/etc/init.d/%s status" % service for service in
+                        self._monitoredServices]
         self._query_command: str = ' & '.join(command_list)
         logger.info('compiled ssh command: ' + self._query_command)
 
     @staticmethod
-    def ssh_worker(hosts: Queue, esxi_username: str, esxi_password: str, command: str, monitored_services: list,
+    def ssh_worker(hosts: Queue, esxi_username: str, esxi_password: str,
+                   command: str, monitored_services: list,
                    output: dict) -> None:
         """
         To be used with a thread. Uses a queue as list of hosts to be monitored
@@ -55,8 +56,8 @@ class SshServiceCollector(BaseCollector):
                 # connect
                 client = paramiko.SSHClient()
                 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                client.connect(
-                    hostname=host, username=esxi_username, password=esxi_password)
+                client.connect(hostname=host, username=esxi_username,
+                               password=esxi_password)
 
                 # fetch data
                 stdin, stdout, stderr = client.exec_command(command, timeout=2)
@@ -70,20 +71,23 @@ class SshServiceCollector(BaseCollector):
 
             # Catch non critical exceptions otherwise crash... (eg paramiko.ConfigParserError)
             except (
-                    paramiko.BadAuthenticationType, paramiko.AuthenticationException, paramiko.PasswordRequiredException) as ex:
+            paramiko.BadAuthenticationType, paramiko.AuthenticationException,
+            paramiko.PasswordRequiredException) as ex:
                 logger.warning(
                     "Could not ssh login to: %s. Reason: %s" % (host, str(ex)))
                 blacklist.add_host(host)
-            except (paramiko.BadHostKeyException, paramiko.ChannelException, paramiko.SSHException,
-                    paramiko.ProxyCommandFailure) as ex:
+            except (paramiko.BadHostKeyException, paramiko.ChannelException,
+                    paramiko.SSHException, paramiko.ProxyCommandFailure) as ex:
                 logger.warning(
-                    "Couldn't ssh connect to esxi-host via ssh: %s. Reason: %s" % (host, str(ex)))
+                    "Couldn't ssh connect to esxi-host via ssh: %s. Reason: %s" % (
+                    host, str(ex)))
             except Exception as ex:
                 logger.error(str(ex))
                 raise SSHEsxiClientException(str(ex)) from ex
 
     def describe(self):
-        yield GaugeMetricFamily('esxi_ssh_service_state', 'health status of esxi-host services collected via ssh')
+        yield GaugeMetricFamily('esxi_ssh_service_state',
+                                'health status of esxi-host services collected via ssh')
 
     def collect(self):
         """
@@ -96,8 +100,10 @@ class SshServiceCollector(BaseCollector):
         tasks = Queue()
 
         # basically a template for a gauge metric
-        gauge_metric = GaugeMetricFamily('esxi_ssh_service_state', '1=running, 0=stopped',
-                                         labels=['vcenter', 'hostsystem', 'service'])
+        gauge_metric = GaugeMetricFamily('esxi_ssh_service_state',
+                                         '1=running, 0=stopped',
+                                         labels=['vcenter', 'hostsystem',
+                                                 'service'])
 
         # get hosts
         hosts = self.get_active_hosts()
@@ -108,9 +114,8 @@ class SshServiceCollector(BaseCollector):
         threads = []
         for i in range(config.ssh_threads):
             t = Thread(target=SshServiceCollector.ssh_worker, args=(
-                tasks, getenv('ESXI_USER', 'root'), getenv(
-                    'ESXI_PASSWORD'), self._query_command,
-                self._monitoredServices, results))
+                tasks, getenv('ESXI_USER', 'root'), getenv('ESXI_PASSWORD'),
+                self._query_command, self._monitoredServices, results))
             t.start()
             threads.append(t)
 
@@ -121,6 +126,7 @@ class SshServiceCollector(BaseCollector):
         for host, services in results.items():
             for svc_name, svc_state in services.items():
                 gauge_metric.add_metric(
-                    labels=[getenv('VCENTER_URL'), host, svc_name], value=svc_state)
+                    labels=[getenv('VCENTER_URL'), host, svc_name],
+                    value=svc_state)
 
         yield gauge_metric
