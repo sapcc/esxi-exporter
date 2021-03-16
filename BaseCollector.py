@@ -34,7 +34,7 @@ class BaseCollector(ABC):
         hosts = self.vcenter.get_hosts()
         hosts = [host for host in hosts if self.netbox.is_host_active(
             host.name.split('.')[0]) and blacklist.is_host_allowed(host.name)]
-        logger.info(
+        logger.debug(
             '%i active hosts at %s' % (len(hosts), getenv('VCENTER_URL')))
         return hosts
 
