@@ -78,10 +78,7 @@ def get_collectors() -> list:
 
 def check_env_vars():
     logger.debug('checking environment variables...')
-    str_env = (
-        'VCENTER_USER', 'VCENTER_PASSWORD', 'VCENTER_URL', 'ESXI_PASSWORD',
-        'NETBOX_URL')
-    for item in str_env:
+    for item in ['VCENTER_USER', 'VCENTER_PASSWORD', 'VCENTER_URL', 'ESXI_PASSWORD', 'NETBOX_URL']:
         if os.getenv(item) is None:
             logger.critical(
                 'A environment variable of type string is missing: %s' % item)
