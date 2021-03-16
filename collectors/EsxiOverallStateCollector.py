@@ -40,7 +40,8 @@ class EsxiOnlineStateCollector(BaseCollector):
         [q.put(host) for host in vc_hosts]
 
         for i in range(config.overallstate_threads):
-            t = Thread(target=EsxiOnlineStateCollector.worker, args=(q, results))
+            t = Thread(target=EsxiOnlineStateCollector.worker,
+                       args=(q, results))
             threads.append(t)
             t.start()
 
@@ -56,6 +57,7 @@ class EsxiOnlineStateCollector(BaseCollector):
                 state = 1
             else:
                 state = 0
-            gauge_metric.add_metric(labels=[getenv('VCENTER_URL'), host, 'ssh_connection'], value=state)
+            gauge_metric.add_metric(
+                labels=[getenv('VCENTER_URL'), host, 'ssh_connection'], value=state)
 
         yield gauge_metric

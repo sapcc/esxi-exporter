@@ -28,7 +28,8 @@ class VcenterConnection:
     def login(self):
         logger.info('vCenter logging in...')
         try:
-            self.api = self._connect_class(protocol='https', host=self.host, user=self.user, pwd=self.password)
+            self.api = self._connect_class(
+                protocol='https', host=self.host, user=self.user, pwd=self.password)
             logger.info('successfuly logged into vCenter')
         except socket.gaierror:
             message = 'Name or service not known: %s' % self.host

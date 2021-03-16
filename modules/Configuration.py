@@ -4,7 +4,7 @@ import logging
 logger = logging.getLogger('esxi-exporter')
 
 try:
-
+    logger.info('loading config.yaml')
     with open('config.yaml', 'r', encoding='utf8') as f:
         data = yaml.safe_load(f)
 
@@ -19,6 +19,7 @@ try:
     overallstate_threads: int = int(
         data['overall_state_collector']['thread_count'])
     del data
+    logger.info('config.yaml loaded.')
 
 except KeyError as ex:
     logger.critical("Missing configuration entry: %s" % str(ex))

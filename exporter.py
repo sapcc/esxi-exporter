@@ -1,22 +1,29 @@
 import logging
 import os
 import time
+from optparse import OptionParser
 from os import getenv
 
 import urllib3
 from prometheus_client import REGISTRY, start_http_server
 
+import modules.Configuration as config
 from collectors.EsxiOverallStateCollector import EsxiOnlineStateCollector
 from collectors.PyVimServiceCollector import PyVimServiceCollector
 from collectors.SshServiceCollector import SshServiceCollector
-import modules.Configuration as config
 
 # disable ssl warning
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # init logger once
 logger = logging.getLogger('esxi-exporter')
-logger.setLevel(logging.DEBUG)
+parser = OptionParser()
+parser.add_option("-d", "--debug", dest="debug", help="enable debug output", action="store_true")
+(options, args) = parser.parse_args()
+if options.debug:
+    logger.setLevel(logging.DEBUG)
+else:
+    logger.setLevel(logging.INFO)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('[%(asctime)s] [%(levelname)s] %(message)s')
 ch.setFormatter(formatter)
@@ -52,12 +59,10 @@ def run_prometheus_server(port: int) -> None:
 
 def check_env_vars():
     logger.info('checking environment variables...')
-    str_env = ('VCENTER_USER', 'VCENTER_PASSWORD',
-               'VCENTER_URL', 'ESXI_PASSWORD', 'NETBOX_URL')
+    str_env = ('VCENTER_USER', 'VCENTER_PASSWORD', 'VCENTER_URL', 'ESXI_PASSWORD', 'NETBOX_URL')
     for item in str_env:
         if os.getenv(item) is None:
-            logger.critical(
-                'A environment variable of type string is missing: %s' % item)
+            logger.critical('A environment variable of type string is missing: %s' % item)
             exit(0)
 
     logger.info('All environment variables are set.')
