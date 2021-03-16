@@ -52,7 +52,6 @@ def run_prometheus_server(port: int) -> None:
         time.sleep(1)
 
 
-# https://github.com/sapcc/vrops-exporter/blob/master/exporter.py#L92-L105
 def get_collectors() -> list:
     """
     Get all collectors which are named in config.yaml > collectors section
