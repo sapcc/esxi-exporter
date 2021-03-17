@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from os import getenv
 from modules.NetboxHelper import NetboxHelper
 from modules.VcenterConnection import VcenterConnection
+from modules.UnifiedInterface import UnifiedInterface
 
 import logging
 import modules.TimedBlacklist as blacklist
@@ -10,47 +11,11 @@ import modules.TimedBlacklist as blacklist
 logger = logging.getLogger('esxi-exporter')
 
 
-_single_netbox: NetboxHelper = None
-
-
-class BaseCollector(ABC):
-
-    def __init__(self) -> None:
-        self.vcenter = VcenterConnection(getenv('VCENTER_URL'),
-                                         getenv('VCENTER_USER'),
-                                         getenv('VCENTER_PASSWORD'))
-
-        global _single_netbox
-        if _single_netbox is None:
-            self.netbox = NetboxHelper()
-            _single_netbox = self.netbox
-        else:
-            self.netbox = _single_netbox
+class BaseCollector(ABC, UnifiedInterface):
 
     @abstractmethod
     def collect(self):
         pass
-
-    def _check_connection(self) -> None:
-        if not self.vcenter.is_alive():
-            self.vcenter = VcenterConnection(getenv('VCENTER_URL'),
-                                             getenv('VCENTER_USER'),
-                                             getenv('VCENTER_PASSWORD'))
-
-    def get_active_hosts(self) -> list:
-        self._check_connection()
-
-        hosts = self.vcenter.get_hosts()
-        hosts = [host for host in hosts if self.netbox.is_host_active(
-            host.name.split('.')[0]) and blacklist.is_host_allowed(host.name)]
-        logger.debug(
-            '%i active hosts at %s' % (len(hosts), getenv('VCENTER_URL')))
-        return hosts
-
-    def get_vcenter_hosts(self) -> list:
-        self._check_connection()
-        hosts = self.vcenter.get_hosts()
-        return hosts
 
     @abstractmethod
     def describe(self):
