@@ -10,6 +10,7 @@ class EnvironmentConfig(metaclass=Singleton):
             'ESXI_PASSWORD',
             'ESXI_USER',
             'VCENTER_USER',
-            'VCENTER_PASSWORD'
+            'VCENTER_PASSWORD',
+            'ATLAS_FILE'
         ]:
             self.__dict__[key] = environ[key]
