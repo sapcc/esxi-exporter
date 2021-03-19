@@ -1,4 +1,4 @@
-# esxi-exporter
+# ESXi-exporter
 Prometheus exporter, which utilises the _VMware SDK_ and _SSH_ to get metrics from _VMware ESXi-HostSystems_.
 
 ## About
