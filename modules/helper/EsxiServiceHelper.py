@@ -3,7 +3,6 @@ from interfaces.host import Host
 from modules.api.Atlas import Atlas
 from modules.api.SshHelper import SshHelper
 from modules.Globals import Globals
-from modules.TimedBlacklist import TimedBlacklist
 
 from threading import Thread
 from queue import Queue
@@ -17,7 +16,6 @@ class EsxiServiceHelper:
     def __init__(self) -> None:
         self.atlas = Atlas()
         self.globals = Globals()
-        self.blacklist = TimedBlacklist()
 
 
         self._services = self.globals.collectors.critical_service_collector.services
