@@ -1,46 +1,25 @@
 # esxi-exporter
-Prometheus exporter, which utilises the VMware SDK to get metrics from VMware ESXi.
+Prometheus exporter, which utilises the _VMware SDK_ and _SSH_ to get metrics from _VMware ESXi-HostSystems_.
 
 ## About
-This is a critical service exporter. It uses the vCenter pyVmomi SDK and ssh to retrieve critical services of esxi-hosts in order to monitor them with prometheus.
-The term services relates to linux-services like `hostd` or `ntp`. ESXi means esxi-hostsystem.
+This exporter contains a `critical service collector` and a `overall state collector`. It monitors the service state of services like `hostd` or `ntpd` and gathers the _ESXi-HostSystem_ `overallState` from _vCenters_. 
 
 
 ## Getting started
 
-- Required information can be passed by environment variables
-- Environments variables can be specified in Linux like this: `export "key"="value"` 
-- Simply start the `exporter.py` with python.
+1. Configure the project
+    - Credentials are passed by environment variables.
+    - `config.yaml` contains some static configuration
+    - There are command-line options for more console output
+2. Run `exporter.py` with _python3_
 
 **Environment variables**
-- `VCENTER_USER` the vCenter username - required
-- `VCENTER_PASSWORD` the vCenter password - required
-- `ESXI_USER` the ESXi-host ssh username - required
-- `ESXI_PASSWORD` the ESXi-host ssh password - required
-- `VCENTER_URL` the vCenter url without `https://` - required
-- `NETBOX_URL` the netbox url with `https://` - required
+- `VCENTER_USER` the vCenter username
+- `VCENTER_PASSWORD` the vCenter password
+- `ESXI_USER` the ESXi-host ssh username
+- `ESXI_PASSWORD` the ESXi-host ssh password
+- `VCENTER_URL` the vCenter url without `https://`
 
 **Command-line arguments**
 - `-d` or `--debug` sets logger to debug output
 - `-v` or `--info` sets logger to info output
-
-
-### Configuration
-- Open the `config yaml.`
-- If you enable collectors ensure that the classname matches the filename.
-### Recomendation
-- The current approch is to disable the `pyVimServiceCollector` since it does not offer all services of interest and the ssh approach works pretty fast (200 esxi in 30sec) as long as there are not too many services to be monitored. So all load belongs to the ssh service collector. 
-
-
-## Project Structure
-
-### Collectors
-- _pyVmomni service collector_: utilising pyVmomi to get services of esxi-hostsystems from vCenter. Does not return all services of interest. 
-- _ssh service Collector_: collecting missing services via ssh and multithreading
-- _esxi overall state collector_: collecting vCenter "overall_state" of esxi-hostsystems
-
-### Problems
-- ssh is still required since vCenter does not offer all wanted services.
-
-### Netbox
-- We use netbox to double check if a host is really _active_ and ready for use.

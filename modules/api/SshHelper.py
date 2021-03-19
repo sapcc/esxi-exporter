@@ -1,10 +1,24 @@
 import paramiko
 import logging
+import socket
+
+logger = logging.getLogger('esxi')
+
 
 class SshHelper:
 
     @staticmethod
     def execute_command(address: str, user: str, password: str, command: str) -> str:
+        """
+        Runs a ssh command and returns str_out.
+
+        :param address: The address to the remote machine
+        :param user:  The ssh user
+        :param password:  The ssh password
+        :param command: The command to run
+        :return: Answer from host or None
+        """
+
         try:
             client = paramiko.SSHClient()
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -13,5 +27,23 @@ class SshHelper:
             answer = stdout.read().decode("utf-8")
             client.close()
             return answer
-        except Exception as ex:
+
+        except socket.gaierror as ex:
+            logger.error("SSH: DNS error. Could not locate %s" % address)
             return None
+
+        except (paramiko.AuthenticationException, paramiko.PasswordRequiredException) as ex:
+            logger.error("SSH: authentication error: %s" % address)
+            return None
+
+        except (paramiko.BadHostKeyException,
+                paramiko.SSHException,
+                paramiko.ChannelException,
+                paramiko.ConfigParseError
+                ) as ex:
+            logger.error("SSH: connection failed to %s " % address)
+            return  None
+
+
+
+

@@ -8,6 +8,8 @@ import logging
 import socket
 
 # Init Logging
+from modules.Exceptions import VcenterError
+
 logger = logging.getLogger('esxi-exporter')
 
 
@@ -41,18 +43,20 @@ class VcenterConnection:
             self.api = self._connect_class(protocol='https', host=self.host,
                                            user=self.user, pwd=self.password)
             logger.debug('successfuly logged into vCenter')
-        # todo: fix that below
-        except socket.gaierror:
-            message = 'Name or service not known: %s' % self.host
+
+        except socket.gaierror as ex:
+            message = 'Vcenter: DNS error, could not resolve name: %s' % self.host
             logger.error(message)
-        except vim.fault.InvalidLogin:
-            message = 'Wrong credentials %s' % self.host
+            raise VcenterError(message) from ex
+        except vim.fault.InvalidLogin as ex:
+            message = 'Vcenter: wrong credentials'
             logger.error(message)
+            raise VcenterError(message) from ex
+
 
     def is_alive(self) -> bool:
         if self.api is None:
-            return None
-
+            return False
         try:
             self.api.CurrentTime()
             return True
@@ -60,7 +64,8 @@ class VcenterConnection:
             return False
 
     def disconnect(self) -> None:
-        Disconnect(self.api)
+        if self.api is not None:
+            Disconnect(self.api)
 
     def _get_obj(self, root, vim_type):
         """
@@ -141,7 +146,7 @@ class VcenterConnection:
             return res
 
         except Exception as ex:
-            raise ex
+            raise VcenterError('Vcenter: unknown error') from ex
         finally:
             self.disconnect()
 

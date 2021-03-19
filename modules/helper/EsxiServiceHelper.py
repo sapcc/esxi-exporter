@@ -3,6 +3,7 @@ from interfaces.host import Host
 from modules.api.Atlas import Atlas
 from modules.api.SshHelper import SshHelper
 from modules.Globals import Globals
+from modules.TimedBlacklist import TimedBlacklist
 
 from threading import Thread
 from queue import Queue
@@ -16,6 +17,8 @@ class EsxiServiceHelper:
     def __init__(self) -> None:
         self.atlas = Atlas()
         self.globals = Globals()
+        self.blacklist = TimedBlacklist()
+
 
         self._services = self.globals.collectors.critical_service_collector.services
         command_list = ["/etc/init.d/%s status" %
@@ -29,8 +32,6 @@ class EsxiServiceHelper:
     def _worker(q: Queue, ssh_username: str, ssh_password: str, command: str, services: list, output: list):
         while not q.empty():
             host: Host = q.get()
-
-            print(host.name)
 
             answer = SshHelper.execute_command(
                 host.address,
@@ -59,7 +60,6 @@ class EsxiServiceHelper:
 
     def get_all_service_stats(self) -> list:
         # get hosts
-        logging.debug('get_all_service_stats()...')
         hosts = self.atlas.get_esxi_hosts()
 
         # get services

@@ -1,4 +1,6 @@
 from os import stat
+
+from modules.Exceptions import AtlasError
 from modules.Singleton import Singleton
 from modules.Globals import Globals
 from interfaces.host import Host
@@ -23,13 +25,18 @@ class Atlas(metaclass=Singleton):
         :return: atlas.json as dict.
         """
 
-        with open(self.globals.atlas_file, 'rt', encoding='utf8') as f:
-            data = json.load(f)
-        return data
+        logger.debug('Opening atlas file: %s' % self.globals.atlas_file)
+
+        try:
+            with open(self.globals.atlas_file, 'rt', encoding='utf8') as f:
+                data = json.load(f)
+            return data
+        except IOError as ex:
+            raise AtlasError('could not open atlas file: %s ' % self.globals.atlas_file) from ex
 
     def get_vcenters(self) -> list:
         """
-        Get all vcenters. Returns a list of Vcenter
+        Get all vcenters.
 
         :return: list of interfaces.Vcenter
         """
@@ -43,7 +50,7 @@ class Atlas(metaclass=Singleton):
                     name=target['labels']['server_name'],
                     address=target['targets'][0],
                     site=target['labels']['site']
-                )
+                    )
                 )
         return results
 

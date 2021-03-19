@@ -3,6 +3,10 @@ from os import environ
 
 
 class EnvironmentConfig(metaclass=Singleton):
+    """
+    Provides configuration from environment variables.
+    """
+
 
     def __init__(self) -> None:
 
@@ -12,7 +16,7 @@ class EnvironmentConfig(metaclass=Singleton):
             'VCENTER_USER',
             'VCENTER_PASSWORD',
             'ATLAS_FILE',
-            'NETBOX_URL',
             'VCENTER_URL'
         ]:
+            # add data as attributes to this class
             self.__dict__[key.lower()] = environ[key]
