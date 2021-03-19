@@ -1,14 +1,20 @@
+from os import stat
 from modules.Singleton import Singleton
 from modules.Globals import Globals
-from interfaces.host import Host  
-from interfaces.vcenter import Vcenter  
+from interfaces.host import Host
+from interfaces.vcenter import Vcenter
 
 import json
+import re
+import logging
+
+
+logger = logging.getLogger('esxi')
 
 class Atlas(metaclass=Singleton):
     def __init__(self) -> None:
         self.globals = Globals()
-
+        self.re_site = re.compile(r'([A-Z]{2}\-[A-Z]{2}\-[0-9])[a-z]')
 
     def load_file(self):
         """
@@ -17,7 +23,7 @@ class Atlas(metaclass=Singleton):
         :return: atlas.json as dict.
         """
 
-        with open(self.globals.ATLAS_FILE, 'rt', encoding='utf8') as f:
+        with open(self.globals.atlas_file, 'rt', encoding='utf8') as f:
             data = json.load(f)
         return data
 
@@ -25,15 +31,20 @@ class Atlas(metaclass=Singleton):
         """
         Get all vcenters. Returns a list of Vcenter
 
-        :return: list of Vcenter
+        :return: list of interfaces.Vcenter
         """
+
+        logger.debug('getting vcenters from atlas...')
 
         results = []
         for target in self.load_file():
             if target['labels']['job'] == 'vcenter':
                 results.append(Vcenter(
-                    name = target['labels']['server_name'],
-                    address = target['targets'][0]))
+                    name=target['labels']['server_name'],
+                    address=target['targets'][0],
+                    site=target['labels']['site']
+                )
+                )
         return results
 
     def get_esxi_hosts(self) -> list:
@@ -43,10 +54,25 @@ class Atlas(metaclass=Singleton):
         :return: list of Host
         """
 
+        logger.debug('getting esxi-hosts from atlas...')
+
         results = []
+        vcenters = self.get_vcenters()
         for target in self.load_file():
             if target['labels']['job'] == 'vmware-esxi':
+                name = target['labels']['name']
+                site = target['labels']['site']
+                region = self.re_site.match(site).group(1).lower()
+                status = target['labels']['status']
+                url = f'{name}.cc.{region}.cloud.sap'
+                vcenter = [
+                    vcenter for vcenter in vcenters if vcenter.site == site][0]
                 results.append(Host(
-                    name = target['labels']['server_name'],
-                    address = target['targets'][0]))
+                    name=name,
+                    address=url,
+                    site=site,
+                    status=status,
+                    vcenter=vcenter
+                ))
+
         return results

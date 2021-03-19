@@ -1,4 +1,4 @@
-from modules.ConfigMap import ConfigMap
+from modules.configuration.ConfigMap import ConfigMap
 from modules.Singleton import Singleton
 import yaml
 

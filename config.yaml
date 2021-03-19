@@ -1,19 +1,12 @@
 port: 9666
-cachetime: 60
-blacklisttime: 20
 collectors:
-# As the classname
-  - EsxiOverallStateCollector
-  - SshServiceCollector
-ssh_collector:
-  thread_count: 10
-  services:
-    - hostd
-    - nsx-opsagent
-    - nsx-proxy
-    - nsxa
-    - ntpd
-    - vpxa
-    - vvold
-overall_state_collector:
-  thread_count: 10
+  critical_service_collector:
+    max_threads: 10
+    services:
+      - hostd
+      - nsx-opsagent
+      - nsx-proxy
+      - nsxa
+      - ntpd
+      - vpxa
+      - vvold

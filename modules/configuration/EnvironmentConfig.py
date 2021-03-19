@@ -11,6 +11,8 @@ class EnvironmentConfig(metaclass=Singleton):
             'ESXI_USER',
             'VCENTER_USER',
             'VCENTER_PASSWORD',
-            'ATLAS_FILE'
+            'ATLAS_FILE',
+            'NETBOX_URL',
+            'VCENTER_URL'
         ]:
-            self.__dict__[key] = environ[key]
+            self.__dict__[key.lower()] = environ[key]
