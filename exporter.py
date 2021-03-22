@@ -37,7 +37,7 @@ def init_collectors():
         try:
             collectors.append(class_module.__getattribute__(class_name)())
         except AttributeError as ex:
-            logger.error('Class not found: %s. Ignoring...' % (str(module)))
+            logger.error('Class not found: %s. Ignoring...' % (str(class_module)))
 
     return collectors
 
@@ -45,7 +45,6 @@ def init_collectors():
 if __name__ == '__main__':
     init_logger()
     global_config = Globals()
-
 
     logger.debug('starting http server...')
     start_http_server(global_config.port)

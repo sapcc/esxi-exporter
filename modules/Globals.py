@@ -1,7 +1,12 @@
+from modules.Exceptions import ExporterException
+from modules.Singleton import Singleton
+from modules.configuration.ArgumentsConfig import ArguementsConfig
 from modules.configuration.EnvironmentConfig import EnvironmentConfig
 from modules.configuration.YamlConfig import YamlConfig
-from modules.configuration.ArgumentsConfig import ArguementsConfig
-from modules.Singleton import Singleton
+
+import logging
+
+logger = logging.getLogger('esxi')
 
 
 class Globals(metaclass=Singleton):
@@ -11,8 +16,12 @@ class Globals(metaclass=Singleton):
             YamlConfig(),
             EnvironmentConfig(),
             ArguementsConfig()
-        ]
+            ]
 
         for provider in config_providers:
-            for k,v in provider.__dict__.items():
+            for k, v in provider.__dict__.items():
                 self.__dict__[k] = v
+
+    def __getattr__(self, item):
+        logger.error("setting is not configured: %s" % item)
+        raise ExporterException("Setting is not configured: %s" % item)

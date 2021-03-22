@@ -16,7 +16,7 @@ logger = logging.getLogger('esxi')
 class Atlas(metaclass=Singleton):
     def __init__(self) -> None:
         self.globals = Globals()
-        self.re_site = re.compile(r'([A-Z]{2}\-[A-Z]{2}\-[0-9])[a-z]')
+        self.re_site = re.compile(r'([A-Z]{2}\-[A-Z]{2}\-[0-9])[a-z]', re.IGNORECASE)
 
     def load_file(self):
         """
@@ -48,8 +48,7 @@ class Atlas(metaclass=Singleton):
             if target['labels']['job'] == 'vcenter':
                 results.append(Vcenter(
                     name=target['labels']['server_name'],
-                    address=target['targets'][0],
-                    site=target['labels']['site']
+                    address=target['labels']['server_name'],
                     )
                 )
         return results
@@ -65,20 +64,29 @@ class Atlas(metaclass=Singleton):
 
         results = []
         vcenters = self.get_vcenters()
+
         for target in self.load_file():
             if target['labels']['job'] == 'vmware-esxi':
                 name = target['labels']['name']
                 site = target['labels']['site']
-                region = self.re_site.match(site).group(1).lower()
+                region = self.re_site.match(site).group(1)
                 status = target['labels']['status']
                 url = f'{name}.cc.{region}.cloud.sap'
                 vcenter = [
-                    vcenter for vcenter in vcenters if vcenter.site == site][0]
+                    vcenter for vcenter in vcenters if vcenter.site == site]
+
+                if len(vcenter) > 0:
+                    vcenter = vcenter[0]
+                else:
+                    vcenter = None
+                    logger.warning('Atlas: could not find vcenter for host: %s' % url)
+
+
                 results.append(Host(
                     name=name,
                     address=url,
                     site=site,
-                    status=status,
+                    server_state=status,
                     vcenter=vcenter
                 ))
 

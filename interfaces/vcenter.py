@@ -1,6 +1,6 @@
 class Vcenter:
 
-    def __init__(self, name: str, address: str, site=None) -> None:
+    def __init__(self, name: str, address: str) -> None:
         """
         Represents a vcenter
 
@@ -10,9 +10,16 @@ class Vcenter:
         """
         self.name = name
         self.address = address
-        self.site = site
 
     @property
     def region(self) -> str:
         # node.cc.region.cloud.sap
         return self.name.split('.')[2]
+
+    @property
+    def site(self) -> str:
+        #vc-x-0.cc.region.cloud.sap
+        segments = self.name.split('.')
+        site = segments[0].split('-')[1]
+        region = segments[2]
+        return region+site

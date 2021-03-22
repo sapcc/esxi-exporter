@@ -27,7 +27,8 @@ class EsxiServiceHelper:
         self._services = [item.replace('nsx-opsagent', 'opsAgent')
                           for item in self._services]
 
-    def _worker(q: Queue, ssh_username: str, ssh_password: str, command: str, services: list, output: list):
+    def _worker(q: Queue, ssh_username: str, ssh_password: str,
+                command: str, services: list, output: list):
         while not q.empty():
             host: Host = q.get()
 

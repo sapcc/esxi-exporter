@@ -38,11 +38,11 @@ class VcenterConnection:
 
     def login(self) -> None:
 
-        logger.debug('vCenter logging in...')
+        logger.debug('vCenter logging in: %s' % self.host)
         try:
             self.api = self._connect_class(protocol='https', host=self.host,
                                            user=self.user, pwd=self.password)
-            logger.debug('successfuly logged into vCenter')
+            logger.debug('successfully logged into vCenter')
 
         except socket.gaierror as ex:
             message = 'Vcenter: DNS error, could not resolve name: %s' % self.host
@@ -52,7 +52,6 @@ class VcenterConnection:
             message = 'Vcenter: wrong credentials'
             logger.error(message)
             raise VcenterError(message) from ex
-
 
     def is_alive(self) -> bool:
         if self.api is None:

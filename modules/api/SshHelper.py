@@ -4,6 +4,8 @@ import socket
 
 logger = logging.getLogger('esxi')
 
+# trying to remove anyoing exception of banner-timeout that has no effect
+logging.getLogger('paramiko.transport').setLevel(logging.CRITICAL)
 
 class SshHelper:
 
@@ -20,6 +22,7 @@ class SshHelper:
         """
 
         try:
+            logger.debug("SSH: connecting to %s" % address)
             client = paramiko.SSHClient()
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             client.connect(hostname=address, username=user, password=password, banner_timeout=0.5)
@@ -35,13 +38,12 @@ class SshHelper:
         except (paramiko.AuthenticationException, paramiko.PasswordRequiredException) as ex:
             logger.error("SSH: authentication error: %s" % address)
             return None
-
+        
         except (paramiko.BadHostKeyException,
                 paramiko.SSHException,
                 paramiko.ChannelException,
-                paramiko.ConfigParseError
                 ) as ex:
-            logger.error("SSH: connection failed to %s " % address)
+            logger.error("S    SH: connection failed to %s " % address)
             return  None
 
 

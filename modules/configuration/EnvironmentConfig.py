@@ -16,7 +16,6 @@ class EnvironmentConfig(metaclass=Singleton):
             'VCENTER_USER',
             'VCENTER_PASSWORD',
             'ATLAS_FILE',
-            'VCENTER_URL'
         ]:
             # add data as attributes to this class
             self.__dict__[key.lower()] = environ[key]
