@@ -46,7 +46,6 @@ class EsxiServiceHelper:
                 output.append(host)
                 continue
 
-
             answer = answer.splitlines()
             for service in services:
                 for line in answer:

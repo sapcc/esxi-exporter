@@ -43,8 +43,8 @@ class SshHelper:
                 paramiko.SSHException,
                 paramiko.ChannelException,
                 ) as ex:
-            logger.error("S    SH: connection failed to %s " % address)
-            return  None
+            logger.error("SSH: connection failed to %s " % address)
+            return None
 
 
 

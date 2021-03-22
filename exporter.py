@@ -1,13 +1,10 @@
 from modules.Globals import Globals
-from collectors.CriticalServiceCollector import CriticalServiceCollector
-from collectors.OverallStateCollector import OverallStateCollector
 
 from importlib import import_module
 from time import sleep
 from prometheus_client import REGISTRY, start_http_server
 
 import logging
-import re
 
 logger = logging.getLogger('esxi')
 

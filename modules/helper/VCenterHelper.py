@@ -1,9 +1,9 @@
 from modules.Globals import Globals
-from modules.api.VcenterConnection import VcenterConnection
 from modules.api.Atlas import Atlas
+from modules.api.VcenterConnection import VcenterConnection
+
 
 class VCenterHelper:
-
 
     def __init__(self) -> None:
         self.globals = Globals()
@@ -18,4 +18,5 @@ class VCenterHelper:
                 self.globals.vcenter_password
             )
             results.extend(vc_conn.get_esxi_overall_stats())
+
         return results

@@ -81,7 +81,6 @@ class Atlas(metaclass=Singleton):
                     vcenter = None
                     logger.warning('Atlas: could not find vcenter for host: %s' % url)
 
-
                 results.append(Host(
                     name=name,
                     address=url,

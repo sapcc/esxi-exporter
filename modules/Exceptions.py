@@ -10,5 +10,5 @@ class VcenterError(ExporterException):
     pass
 
 
-def ConfigException(ExporterException):
+class ConfigException(ExporterException):
     pass
