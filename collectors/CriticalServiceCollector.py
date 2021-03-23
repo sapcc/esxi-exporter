@@ -19,6 +19,6 @@ class CriticalServiceCollector(BaseCollector):
         hosts = self.get_host_service_stats()
         for host in hosts:
             for service, state in host.services.items():
-                    metric.add_metric([host.site, host.address, service], state)
+                metric.add_metric([host.site, host.address, service], state)
 
         yield metric
