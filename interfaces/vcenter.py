@@ -18,8 +18,8 @@ class Vcenter:
 
     @property
     def site(self) -> str:
-        #vc-x-0.cc.region.cloud.sap
+        # vc-x-0.cc.region.cloud.sap
         segments = self.name.split('.')
         site = segments[0].split('-')[1]
         region = segments[2]
-        return region+site
+        return region + site

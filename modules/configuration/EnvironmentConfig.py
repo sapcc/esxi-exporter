@@ -7,7 +7,6 @@ class EnvironmentConfig(metaclass=Singleton):
     Provides configuration from environment variables.
     """
 
-
     def __init__(self) -> None:
 
         for key in [

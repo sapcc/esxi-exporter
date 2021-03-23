@@ -1,4 +1,3 @@
-from interfaces.vcenter import Vcenter
 from interfaces.host import Host
 from modules.api.Atlas import Atlas
 from modules.api.SshHelper import SshHelper
@@ -16,7 +15,6 @@ class EsxiServiceHelper:
     def __init__(self) -> None:
         self.atlas = Atlas()
         self.globals = Globals()
-
 
         self._services = self.globals.collectors.critical_service_collector.services
         command_list = ["/etc/init.d/%s status" %

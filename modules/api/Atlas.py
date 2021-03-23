@@ -1,5 +1,3 @@
-from os import stat
-
 from modules.Exceptions import AtlasError
 from modules.Singleton import Singleton
 from modules.Globals import Globals
@@ -12,6 +10,7 @@ import logging
 
 
 logger = logging.getLogger('esxi')
+
 
 class Atlas(metaclass=Singleton):
     def __init__(self) -> None:

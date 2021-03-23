@@ -15,7 +15,7 @@ def init_logger():
         logger.setLevel(logging.INFO)
     if global_config.debug:
         logger.setLevel(logging.DEBUG)
-    
+
     ch = logging.StreamHandler()
     formatter = logging.Formatter('[%(asctime)s] [%(levelname)s] %(message)s')
     ch.setFormatter(formatter)
@@ -32,7 +32,7 @@ def init_collectors():
             class_name = ''.join([part[0].upper() + part[1:] for part in entry.split('_')])
             class_module = import_module(f'collectors.{class_name}')
         except ModuleNotFoundError as ex:
-            logger.error('Module not found: %s -> %s. Ignoring...' % (entry,class_name))
+            logger.error('Module not found: %s -> %s. Ignoring...' % (entry, class_name))
             continue
 
         try:

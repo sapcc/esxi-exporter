@@ -1,6 +1,6 @@
 from modules.Exceptions import ExporterException
 from modules.Singleton import Singleton
-from modules.configuration.ArgumentsConfig import ArguementsConfig
+from modules.configuration.ArgumentsConfig import ArgumentsConfig
 from modules.configuration.EnvironmentConfig import EnvironmentConfig
 from modules.configuration.YamlConfig import YamlConfig
 
@@ -15,7 +15,7 @@ class Globals(metaclass=Singleton):
         config_providers = [
             YamlConfig(),
             EnvironmentConfig(),
-            ArguementsConfig()
+            ArgumentsConfig()
             ]
 
         for provider in config_providers:

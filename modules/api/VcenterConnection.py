@@ -37,7 +37,6 @@ class VcenterConnection:
             self._connect_class = SmartConnectNoSSL
 
     def login(self) -> None:
-
         logger.debug('vCenter logging in: %s' % self.host)
         try:
             self.api = self._connect_class(protocol='https', host=self.host,
@@ -76,13 +75,14 @@ class VcenterConnection:
         :return: ContainerView
         """
 
-        container = self.api.content.viewManager.CreateContainerView(root, vim_type, True)
+        container = self.api.content.viewManager.CreateContainerView(
+            root, vim_type, True)
         view = container.view
         container.Destroy()
         return view
 
     @staticmethod
-    def _create_filter_spec(pc, esxi, prop):
+    def _create_filter_spec(pc, esxi_hosts, prop):
         """
         Build a filter spec (some kind of sql_query) for the property
         collector.
@@ -91,7 +91,7 @@ class VcenterConnection:
         /bc14f63065aa360ceca0cca477a8b271d582a090/samples/filter_vms.py
 
         :param pc: The property_collector
-        :param esxi: a ContainerView of vim.HostSystem (Get with get_obj
+        :param esxi_hosts: a ContainerView of vim.HostSystem (Get with get_obj
         :param prop: a single string or list of strings. Properties to
         collect. Eg name, overallStatus...
         :return: the created filter spec
@@ -101,7 +101,7 @@ class VcenterConnection:
             prop = [prop]
 
         objSpecs = []
-        for host in esxi:
+        for host in esxi_hosts:
             objSpec = vmodl.query.PropertyCollector.ObjectSpec(obj=host)
             objSpecs.append(objSpec)
         filterSpec = vmodl.query.PropertyCollector.FilterSpec()
@@ -124,7 +124,8 @@ class VcenterConnection:
             self.login()
             esxi = self._get_obj(self.api.content.rootFolder, [vim.HostSystem])
             pc = self.api.content.propertyCollector
-            filter_spec = self._create_filter_spec(pc, esxi, ['overallStatus', 'name'])
+            filter_spec = self._create_filter_spec(
+                pc, esxi, ['overallStatus', 'name'])
             options = vmodl.query.PropertyCollector.RetrieveOptions()
             result = pc.RetrievePropertiesEx([filter_spec], options)
 
@@ -137,7 +138,8 @@ class VcenterConnection:
 
             for item in result.objects:
                 name = [v.val for v in item.propSet if v.name == 'name'][0]
-                status = [v.val for v in item.propSet if v.name == 'overallStatus'][0]
+                status = [v.val for v in item.propSet if v.name ==
+                          'overallStatus'][0]
                 host = Host(name=name, address=name, overall_status=state_map[status],
                             vcenter=vcenter)
                 res.append(host)

@@ -5,6 +5,7 @@ import logging
 
 logger = logging.getLogger('esxi')
 
+
 class YamlConfig(ConfigMap, metaclass=Singleton):
 
     def __init__(self) -> None:
@@ -19,5 +20,3 @@ class YamlConfig(ConfigMap, metaclass=Singleton):
             logger.error('Yaml: config file is not valid')
         except IOError:
             logger.error("Yaml: could not open file: config.yaml")
-
-
