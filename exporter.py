@@ -25,7 +25,8 @@ def init_logger():
 def init_collectors():
     global_config = Globals()
 
-    collectors = []
+    collectors = list()
+
 
     for entry in global_config.collectors.__dict__.keys():
         try:
