@@ -11,8 +11,11 @@ logger = logging.getLogger('esxi')
 
 def init_logger():
     global_config = Globals()
+    if global_config.info:
+        logger.setLevel(logging.INFO)
     if global_config.debug:
         logger.setLevel(logging.DEBUG)
+    
     ch = logging.StreamHandler()
     formatter = logging.Formatter('[%(asctime)s] [%(levelname)s] %(message)s')
     ch.setFormatter(formatter)
@@ -30,6 +33,7 @@ def init_collectors():
             class_module = import_module(f'collectors.{class_name}')
         except ModuleNotFoundError as ex:
             logger.error('Module not found: %s -> %s. Ignoring...' % (entry,class_name))
+            continue
 
         try:
             collectors.append(class_module.__getattribute__(class_name)())

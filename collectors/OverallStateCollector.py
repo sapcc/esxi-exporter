@@ -7,13 +7,13 @@ class OverallStateCollector(BaseCollector):
 
     def describe(self):
         metric = GaugeMetricFamily('esxi_overall_status', 'green=2/yellow=1/red=0',
-                                   labels=['vcenter', 'host'])
+                                   labels=['vcenter', 'hostsystem'])
         yield metric
 
     def collect(self):
 
         metric = GaugeMetricFamily('esxi_overall_status', 'green=2/yellow=1/red=0',
-                                   labels=['vcenter', 'host'])
+                                   labels=['vcenter', 'hostsystem'])
 
         esxi_stats = self.get_host_overall_stats()
 

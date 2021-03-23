@@ -46,6 +46,9 @@ class SshHelper:
             logger.error("SSH: connection failed to %s " % address)
             return None
 
+        except Exception as ex:
+            logger.error("SSH: unknown error at: %s. reason: %s" % (address, str(ex)))
+
 
 
 

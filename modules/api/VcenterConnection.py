@@ -33,7 +33,7 @@ class VcenterConnection:
         if verify_ssl:
             self._connect_class = SmartConnect
         else:
-            logger.warning('vCenter connection with ssl disabled')
+            logger.warning('vCenter connection with ssl disabled: %s' % host)
             self._connect_class = SmartConnectNoSSL
 
     def login(self) -> None:
@@ -42,14 +42,14 @@ class VcenterConnection:
         try:
             self.api = self._connect_class(protocol='https', host=self.host,
                                            user=self.user, pwd=self.password)
-            logger.debug('successfully logged into vCenter')
+            logger.debug('successfully logged into vCenter: %s' % self.host)
 
         except socket.gaierror as ex:
             message = 'Vcenter: DNS error, could not resolve name: %s' % self.host
             logger.error(message)
             raise VcenterError(message) from ex
         except vim.fault.InvalidLogin as ex:
-            message = 'Vcenter: wrong credentials'
+            message = 'Vcenter: wrong credentials: %s' % self.host
             logger.error(message)
             raise VcenterError(message) from ex
 
