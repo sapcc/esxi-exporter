@@ -10,6 +10,7 @@ import logging
 
 logger = logging.getLogger('esxi')
 
+
 class EsxiServiceHelper:
 
     def __init__(self) -> None:

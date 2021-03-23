@@ -2,7 +2,6 @@ from modules.helper.VCenterHelper import VCenterHelper
 from interfaces.vcenter import Vcenter
 from modules.Globals import Globals
 from modules.api.Atlas import Atlas
-from modules.api.VcenterConnection import VcenterConnection
 from modules.helper.EsxiServiceHelper import EsxiServiceHelper
 
 
