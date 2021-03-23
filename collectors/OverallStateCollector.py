@@ -17,7 +17,8 @@ class OverallStateCollector(BaseCollector):
 
         esxi_stats = self.get_host_overall_stats()
 
-        for host in esxi_stats:
-            metric.add_metric([host.vcenter.name, host.name], host.overall_status)
+        if esxi_stats is not None:
+            for host in esxi_stats:
+                metric.add_metric([host.vcenter.name, host.name], host.overall_status)
 
         yield metric
