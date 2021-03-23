@@ -36,14 +36,14 @@ class SshHelper:
             return None
 
         except (paramiko.AuthenticationException, paramiko.PasswordRequiredException) as ex:
-            logger.error("SSH: authentication error: %s" % address)
+            logger.error("SSH: authentication error: %s: %s" % (address, str(ex)))
             return None
         
         except (paramiko.BadHostKeyException,
                 paramiko.SSHException,
                 paramiko.ChannelException,
                 ) as ex:
-            logger.error("SSH: connection failed to %s " % address)
+            logger.error("SSH: connection failed to %s: %s" % (address, str(ex)))
             return None
 
         except Exception as ex:
