@@ -1,6 +1,4 @@
 from modules.Exceptions import AtlasError
-from modules.Singleton import Singleton
-from modules.Globals import Globals
 from interfaces.host import Host
 from interfaces.vcenter import Vcenter
 
@@ -8,13 +6,14 @@ import json
 import re
 import logging
 
+from modules.configuration.Configuration import Configuration
 
 logger = logging.getLogger('esxi')
 
 
-class Atlas(metaclass=Singleton):
-    def __init__(self) -> None:
-        self.globals = Globals()
+class Atlas():
+    def __init__(self, config: Configuration) -> None:
+        self.config = config
         self.re_site = re.compile(r'([A-Z]{2}\-[A-Z]{2}\-[0-9])[a-z]', re.IGNORECASE)
 
     def load_file(self):
@@ -24,14 +23,14 @@ class Atlas(metaclass=Singleton):
         :return: atlas.json as dict.
         """
 
-        logger.debug('Opening atlas file: %s' % self.globals.atlas_file)
+        logger.debug('Opening atlas file: %s' % self.config.atlas_file)
 
         try:
-            with open(self.globals.atlas_file, 'rt', encoding='utf8') as f:
+            with open(self.config.atlas_file, 'rt', encoding='utf8') as f:
                 data = json.load(f)
             return data
         except IOError as ex:
-            raise AtlasError('could not open atlas file: %s ' % self.globals.atlas_file) from ex
+            raise AtlasError('could not open atlas file: %s ' % self.config.atlas_file) from ex
 
     def get_vcenters(self) -> list:
         """

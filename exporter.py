@@ -1,4 +1,4 @@
-from modules.Globals import Globals
+from modules.configuration.Configuration import Configuration
 
 from importlib import import_module
 from time import sleep
@@ -9,48 +9,39 @@ import logging
 logger = logging.getLogger('esxi')
 
 
-def init_logger():
-    global_config = Globals()
-    if global_config.info:
-        logger.setLevel(logging.INFO)
-    if global_config.debug:
-        logger.setLevel(logging.DEBUG)
-
+def init_logger(logging_mode):
+    logger.setLevel(logging_mode)
     ch = logging.StreamHandler()
     formatter = logging.Formatter('[%(asctime)s] [%(levelname)s] %(message)s')
     ch.setFormatter(formatter)
     logger.addHandler(ch)
 
 
-def init_collectors():
-    global_config = Globals()
+def get_collector(collector_name):
+    class_module = import_module(f'collectors.{collector_name}')
+    return class_module.__getattribute__(collector_name)
 
+
+def init_collectors(config: Configuration):
     collectors = []
 
-    for entry in global_config.collectors.__dict__.keys():
-        try:
-            class_name = ''.join([part[0].upper() + part[1:] for part in entry.split('_')])
-            class_module = import_module(f'collectors.{class_name}')
-        except ModuleNotFoundError as ex:
-            logger.error('Module not found: %s -> %s. Ignoring...' % (entry, class_name))
-            continue
-
-        try:
-            collectors.append(class_module.__getattribute__(class_name)())
-        except AttributeError as ex:
-            logger.error('Class not found: %s. Ignoring...' % (str(class_module)))
+    if config.enable_critical_serivce_collector:
+        collectors.append(get_collector('CriticalServiceCollector')(config))
+    if config.enable_overall_status_collector:
+        collectors.append(get_collector('OverallStateCollector')(config))
 
     return collectors
 
 
 if __name__ == '__main__':
-    init_logger()
-    global_config = Globals()
+    config = Configuration()
+
+    init_logger(config.logging_mode)
 
     logger.debug('starting http server...')
-    start_http_server(global_config.port)
+    start_http_server(config.port)
 
-    collectors = init_collectors()
+    collectors = init_collectors(config)
     for collector in collectors:
         logger.debug('Registering %s' % collector.__module__)
         REGISTRY.register(collector)

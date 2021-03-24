@@ -1,23 +1,24 @@
+from modules.configuration.Configuration import Configuration
 from interfaces.host import Host
 from modules.api.Atlas import Atlas
 from modules.api.SshHelper import SshHelper
-from modules.Globals import Globals
 
 from threading import Thread
 from queue import Queue
 
 import logging
 
+
 logger = logging.getLogger('esxi')
 
 
 class EsxiServiceHelper:
 
-    def __init__(self) -> None:
-        self.atlas = Atlas()
-        self.globals = Globals()
+    def __init__(self, config: Configuration) -> None:
+        self.atlas = Atlas(config)
+        self.config = config
 
-        self._services = self.globals.collectors.critical_service_collector.services
+        self._services = self.config.monitored_serivces
         command_list = ["/etc/init.d/%s status" %
                         service for service in self._services]
         self._command = ' & '.join(command_list)
@@ -50,6 +51,7 @@ class EsxiServiceHelper:
                 for line in answer:
                     if service in line and 'is running' in line:
                         host.services[service] = True
+                        # check next service
                         break
                     else:
                         host.services[service] = False
@@ -65,11 +67,11 @@ class EsxiServiceHelper:
 
         threads = []
         output = []
-        for i in range(self.globals.collectors.critical_service_collector.max_threads):
+        for i in range(self.config.ssh_max_threads):
             t = Thread(target=EsxiServiceHelper._worker, args=(
                 q,
-                self.globals.esxi_user,
-                self.globals.esxi_password,
+                self.config.esxi_user,
+                self.config.esxi_password,
                 self._command,
                 self._services,
                 output

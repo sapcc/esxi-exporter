@@ -1,13 +1,15 @@
 port: 9666
 collectors:
-  overall_state_collector: 
+  overall_state_collector:
+    enabled: true
   critical_service_collector:
-      max_threads: 10
-      services:
-        - hostd
-        - nsx-opsagent
-        - nsx-proxy
-        - nsxa
-        - ntpd
-        - vpxa
-        - vvold
+    enabled: true
+    max_threads: 10
+    services:
+      - hostd
+      - nsx-opsagent
+      - nsx-proxy
+      - nsxa
+      - ntpd
+      - vpxa
+      - vvold

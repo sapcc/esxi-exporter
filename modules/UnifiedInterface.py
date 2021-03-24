@@ -1,17 +1,17 @@
+from modules.configuration.Configuration import Configuration
 from modules.helper.VCenterHelper import VCenterHelper
 from interfaces.vcenter import Vcenter
-from modules.Globals import Globals
 from modules.api.Atlas import Atlas
 from modules.helper.EsxiServiceHelper import EsxiServiceHelper
 
 
 class UnifiedInterface():
 
-    def __init__(self) -> None:
-        self.globals = Globals()
-        self.atlas = Atlas()
-        self.esxi_helper = EsxiServiceHelper()
-        self.vcenter_helper = VCenterHelper()
+    def __init__(self, config: Configuration) -> None:
+        self.config = config
+        self.atlas = Atlas(config)
+        self.esxi_helper = EsxiServiceHelper(config)
+        self.vcenter_helper = VCenterHelper(config)
 
     def get_hosts_by_vcenter(self, vcenter: Vcenter) -> list:
         return self.netbox.get_hosts_by_vcenter(vcenter)

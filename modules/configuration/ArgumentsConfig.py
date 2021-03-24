@@ -1,15 +1,25 @@
 from optparse import OptionParser
-from modules.Singleton import Singleton
 
+import logging
 
-class ArgumentsConfig(metaclass=Singleton):
+logger = logging.getLogger('esxi')
 
-    def __init__(self) -> None:
+class ArgumentsConfig():
+
+    def __init__(self):
         option_parser = OptionParser()
-        option_parser.add_option('-d', '--debug', action='store_true', dest='debug', help='Enable debug output')
-        option_parser.add_option('-v', '--info', action='store_true', dest='info', help='Enable info output')
-        (options, args) = option_parser.parse_args()
+        option_parser.add_option('-v', action='count', dest='debug', help='-v info; -vv debug output', default=0)
 
-        # add attributes dynamically from options to self
-        # __dict__ represents all attributes of a class and can be modified
-        self.__dict__ = options.__dict__
+        try:
+            (options, args) = option_parser.parse_args()
+        except SystemExit:
+            # in case there will be important options
+            # one should consider stopping the program instead of ignoring
+            logger.error('command-line options are faulty. Ignoring...')
+
+        if options.debug == 2:
+            self.logging_mode = logging.DEBUG
+        elif options.debug == 1:
+            self.logging_mode = logging.INFO
+        else:
+            self.logging_mode = logging.WARNING

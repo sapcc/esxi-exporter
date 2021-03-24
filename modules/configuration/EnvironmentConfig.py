@@ -1,20 +1,24 @@
-from modules.Singleton import Singleton
 from os import environ
 
+import logging
 
-class EnvironmentConfig(metaclass=Singleton):
+logger = logging.getLogger('esxi')
+
+class EnvironmentConfig():
     """
     Provides configuration from environment variables.
     """
 
-    def __init__(self) -> None:
-
-        for key in [
-            'ESXI_PASSWORD',
-            'ESXI_USER',
-            'VCENTER_USER',
-            'VCENTER_PASSWORD',
-            'ATLAS_FILE',
-        ]:
-            # add data as attributes to this class
-            self.__dict__[key.lower()] = environ[key]
+    def __init__(self):
+        try:
+            self.esxi_password = environ['ESXI_PASSWORD']
+            self.esxi_user = environ['ESXI_USER']
+            self.vcenter_user = environ['VCENTER_USER']
+            self.vcenter_password = environ['VCENTER_PASSWORD']
+            self.atlas_file = environ['ATLAS_FILE']
+        except KeyError as ex:
+            logger.error('EnvConfig: missing variable: %s' % str(ex))
+            raise SystemExit('Missing enviroment variable') from ex
+        except TypeError as ex:
+            logger.error('EnvConfig: wrong type of variable: %s' % str(ex))
+            raise SystemExit('Wrong type in enviroment variables')
