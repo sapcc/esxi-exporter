@@ -21,5 +21,5 @@ This exporter contains a `critical service collector` and a `overall state colle
 - `VCENTER_URL` the vCenter url without `https://`
 
 **Command-line arguments**
-- `-d` or `--debug` sets logger to debug output
-- `-v` or `--info` sets logger to info output
+- `-v` sets logger to info output
+- `-vv` sets logger to debug output
