@@ -23,7 +23,7 @@ def get_collector(collector_name):
 
 
 def init_collectors(config: Configuration):
-    collectors = []
+    collectors = list()
 
     if config.enable_critical_serivce_collector:
         collectors.append(get_collector('CriticalServiceCollector')(config))
