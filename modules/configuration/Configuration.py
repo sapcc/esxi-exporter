@@ -10,7 +10,7 @@ class Configuration(YamlConfig, ArgumentsConfig, EnvironmentConfig):
 
     def __init__(self):
         # super(Configuration, self).init() did not work
-        # therefor explicit init
+        # therefore explicit init
         YamlConfig.__init__(self)
         ArgumentsConfig.__init__(self)
         EnvironmentConfig.__init__(self)

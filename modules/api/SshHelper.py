@@ -27,7 +27,7 @@ class SshHelper:
             logger.debug("SSH: connecting to %s" % address)
             client = paramiko.SSHClient()
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            client.connect(hostname=address, username=user, password=password, banner_timeout = 0.5)
+            client.connect(hostname=address, username=user, password=password, banner_timeout=0.5)
             stdin, stdout, stderr = client.exec_command(command, timeout=1)
             answer = stdout.read().decode("utf-8")
             client.close()
@@ -40,7 +40,7 @@ class SshHelper:
         except (paramiko.AuthenticationException, paramiko.PasswordRequiredException) as ex:
             logger.error("SSH: authentication error: %s: %s" % (address, str(ex)))
             return None
-        
+
         except (paramiko.BadHostKeyException,
                 paramiko.SSHException,
                 paramiko.ChannelException,
@@ -50,7 +50,3 @@ class SshHelper:
 
         except Exception as ex:
             logger.error("SSH: unknown error at: %s. reason: %s" % (address, str(ex)))
-
-
-
-

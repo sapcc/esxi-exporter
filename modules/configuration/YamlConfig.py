@@ -1,5 +1,3 @@
-from modules.Exceptions import ConfigException
-from os import EX_UNAVAILABLE
 import yaml
 import logging
 

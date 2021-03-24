@@ -5,7 +5,7 @@ from modules.api.Atlas import Atlas
 from modules.helper.EsxiServiceHelper import EsxiServiceHelper
 
 
-class UnifiedInterface():
+class UnifiedInterface:
 
     def __init__(self, config: Configuration) -> None:
         self.config = config

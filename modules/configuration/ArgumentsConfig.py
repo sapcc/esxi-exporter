@@ -10,12 +10,7 @@ class ArgumentsConfig():
         option_parser = OptionParser()
         option_parser.add_option('-v', action='count', dest='debug', help='-v info; -vv debug output', default=0)
 
-        try:
-            (options, args) = option_parser.parse_args()
-        except SystemExit:
-            # in case there will be important options
-            # one should consider stopping the program instead of ignoring
-            logger.error('command-line options are faulty. Ignoring...')
+        (options, args) = option_parser.parse_args()
 
         if options.debug == 2:
             self.logging_mode = logging.DEBUG

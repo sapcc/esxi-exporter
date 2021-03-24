@@ -4,7 +4,7 @@ import logging
 
 logger = logging.getLogger('esxi')
 
-class EnvironmentConfig():
+class EnvironmentConfig:
     """
     Provides configuration from environment variables.
     """
@@ -18,7 +18,7 @@ class EnvironmentConfig():
             self.atlas_file = environ['ATLAS_FILE']
         except KeyError as ex:
             logger.error('EnvConfig: missing variable: %s' % str(ex))
-            raise SystemExit('Missing enviroment variable') from ex
+            raise SystemExit('Missing environment variable') from ex
         except TypeError as ex:
             logger.error('EnvConfig: wrong type of variable: %s' % str(ex))
-            raise SystemExit('Wrong type in enviroment variables')
+            raise SystemExit('Wrong type in environment variables')

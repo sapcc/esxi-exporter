@@ -9,6 +9,3 @@ class AtlasError(ExporterException):
 class VcenterError(ExporterException):
     pass
 
-
-class ConfigException(ExporterException):
-    pass
