@@ -89,8 +89,8 @@ class EsxiServiceHelper:
 
         threads = list()
         output = list()
-        for i in range(self.max_threads):
-            t = Thread(target=EsxiServiceHelper._worker, args=(
+        for _ in range(self.max_threads):
+            t = Thread(target=EsxiServiceHelper._worker,  args=(
                 host_queue,
                 self.esxi_username,
                 self.esxi_password,
