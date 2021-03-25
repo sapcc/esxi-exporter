@@ -1,33 +1,22 @@
-from modules.configuration.EnvironmentConfig import EnvironmentConfig
-from modules.configuration.YamlConfig import YamlConfig
-from modules.helper.VCenterHelper import VCenterHelper
+from interfaces.host import Host
+from interfaces.vcenter import Vcenter
+from modules.configuration.GeneralHelperConfig import GeneralHelperConfig
 from modules.api.Atlas import Atlas
-from modules.helper.EsxiServiceHelper import EsxiServiceHelper
+
+from typing import List
 
 
-class UnifiedInterface:
+class GeneralHelper:
+    """
+    The general helper provides functionality of shared APIs.
+    """
 
-    def __init__(self, yaml_config: YamlConfig, env_config: EnvironmentConfig) -> None:
+    def __init__(self, ) -> None:
+        config = GeneralHelperConfig()
+        self.atlas = Atlas(config.atlas_file)
 
-        self.yaml_config = yaml_config
-        self.env_config = env_config
-
-        self.atlas = Atlas(env_config.atlas_file)
-        self.esxi_helper = EsxiServiceHelper(self, env_config.esxi_user, env_config.esxi_password)
-        self.vcenter_helper = VCenterHelper(self)
-
-
-    def get_vcenters(self) -> list:
+    def get_vcenters(self) -> List[Vcenter]:
         return self.atlas.get_vcenters()
 
-    def get_host_service_stats(self) -> list:
-        return self.esxi_helper.get_all_service_stats()
-
-    def get_host_overall_stats(self) -> list:
-        return self.vcenter_helper.get_esxi_overall_stats()
-
-    def get_hosts(self):
+    def get_esxi_hosts(self) -> List[Host]:
         return self.atlas.get_esxi_hosts()
-
-    def get_vcenters(self):
-        return self.atlas.get_vcenters()

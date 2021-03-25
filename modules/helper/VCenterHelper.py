@@ -1,21 +1,30 @@
-from modules.api.Atlas import Atlas
+from interfaces.host import Host
+from modules.helper.GeneralHelper import GeneralHelper
 from modules.api.VcenterConnection import VcenterConnection
-from modules.configuration.Configuration import Configuration
+
+from typing import List
 
 
 class VCenterHelper:
 
-    def __init__(self, config: Configuration) -> None:
-        self.config = config
-        self.atlas = Atlas(config)
+    def __init__(self, vcenter_username: str, vcenter_password) -> None:
+        self.general_helper = GeneralHelper()
+        self.vcenter_username = vcenter_username
+        self.vcenter_password = vcenter_password
 
-    def get_esxi_overall_stats(self):
+    def get_esxi_overall_stats(self) -> List[Host]:
+        """
+        Collects the overall state of esxi-hosts as displayed in the vcenter.
+
+        :return: List of Host
+        """
+
         results = []
-        for vcenter in self.atlas.get_vcenters():
+        for vcenter in self.general_helper.get_vcenters():
             vc_conn = VcenterConnection(
                 vcenter.address,
-                self.config.vcenter_user,
-                self.config.vcenter_password
+                self.vcenter_username,
+                self.vcenter_password
             )
             results.extend(vc_conn.get_esxi_overall_stats())
 

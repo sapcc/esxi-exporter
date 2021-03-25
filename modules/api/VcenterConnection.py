@@ -4,12 +4,12 @@ from interfaces.vcenter import Vcenter
 from pyVmomi import vim, vmodl
 from pyVim.connect import SmartConnect, SmartConnectNoSSL, Disconnect
 
+from typing import List
+
 import logging
 import socket
 
 # Init Logging
-from modules.Exceptions import VcenterError
-
 logger = logging.getLogger('esxi-exporter')
 
 
@@ -43,16 +43,21 @@ class VcenterConnection:
                                            user=self.user, pwd=self.password)
             logger.debug('successfully logged into vCenter: %s' % self.host)
 
-        except socket.gaierror as ex:
+        except socket.gaierror:
             message = 'Vcenter: DNS error, could not resolve name: %s' % self.host
             logger.error(message)
-            raise VcenterError(message) from ex
+            raise
         except vim.fault.InvalidLogin as ex:
             message = 'Vcenter: wrong credentials: %s' % self.host
             logger.error(message)
-            raise VcenterError(message) from ex
+            raise
 
     def is_alive(self) -> bool:
+        """
+        Checks if there is a working connection to a vcenter.
+
+        :return: Boolean, is there a vCenter connection?
+        """
         if self.api is None:
             return False
         try:
@@ -62,6 +67,9 @@ class VcenterConnection:
             return False
 
     def disconnect(self) -> None:
+        """
+        Disconnect from vCenter. Does not matter if there is a connection.
+        """
         if self.api is not None:
             Disconnect(self.api)
 
@@ -82,7 +90,7 @@ class VcenterConnection:
         return view
 
     @staticmethod
-    def _create_filter_spec(pc, esxi_hosts, prop):
+    def _create_filter_spec(esxi_hosts, prop):
         """
         Build a filter spec (some kind of sql_query) for the property
         collector.
@@ -90,7 +98,6 @@ class VcenterConnection:
         https://github.com/vmware/pyvmomi-community-samples/blob
         /bc14f63065aa360ceca0cca477a8b271d582a090/samples/filter_vms.py
 
-        :param pc: The property_collector
         :param esxi_hosts: a ContainerView of vim.HostSystem (Get with get_obj
         :param prop: a single string or list of strings. Properties to
         collect. Eg name, overallStatus...
@@ -112,12 +119,12 @@ class VcenterConnection:
         filterSpec.propSet = [propSet]
         return filterSpec
 
-    def get_esxi_overall_stats(self):
+    def get_esxi_overall_stats(self) -> List[Host]:
         """
         Get the overall status of all esxi-hosts from vcenter.
         Status can be green, yellow or red.
 
-        :return: a list of interfaces.Host
+        :return: a list of interfaces.Host or None
         """
 
         try:
@@ -125,7 +132,7 @@ class VcenterConnection:
             esxi = self._get_obj(self.api.content.rootFolder, [vim.HostSystem])
             pc = self.api.content.propertyCollector
             filter_spec = self._create_filter_spec(
-                pc, esxi, ['overallStatus', 'name'])
+                esxi, ['overallStatus', 'name'])
             options = vmodl.query.PropertyCollector.RetrieveOptions()
             result = pc.RetrievePropertiesEx([filter_spec], options)
 
@@ -147,8 +154,9 @@ class VcenterConnection:
             return res
 
         except Exception as ex:
-            raise VcenterError('Vcenter: unknown error') from ex
+            logger.error('Vcenter: unknown error: %s' % str(ex))
+            return None
+
         finally:
             self.disconnect()
 
-        return None

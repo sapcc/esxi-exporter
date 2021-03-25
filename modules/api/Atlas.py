@@ -1,40 +1,32 @@
-from modules.Exceptions import AtlasError
 from interfaces.host import Host
 from interfaces.vcenter import Vcenter
+from modules.helper.FileHelper import FileHelper
 
-import json
+from typing import List
+
 import re
 import logging
-
-from modules.configuration.Configuration import Configuration
 
 logger = logging.getLogger('esxi')
 
 
 class Atlas():
-    def __init__(self, config: Configuration) -> None:
-        self.config = config
+    def __init__(self, atlas_file: str) -> None:
+        self.atlas_file = atlas_file
         self.re_site = re.compile(r'([A-Z]{2}\-[A-Z]{2}\-[0-9])[a-z]', re.IGNORECASE)
 
-    def load_file(self):
+    def load_data(self):
+        atlas_data = FileHelper.get_json_dict(self.atlas_file)
+
+        if atlas_data is None:
+            logger.error('Could not read atlas file: %s' % self.atlas_file)
+            raise SystemExit('Could not read atlas file.')
+
+        return atlas_data
+
+    def get_vcenters(self) -> List[Vcenter]:
         """
-        Loads the atlas.json and returns its content
-
-        :return: atlas.json as dict.
-        """
-
-        logger.debug('Opening atlas file: %s' % self.config.atlas_file)
-
-        try:
-            with open(self.config.atlas_file, 'rt', encoding='utf8') as f:
-                data = json.load(f)
-            return data
-        except IOError as ex:
-            raise AtlasError('could not open atlas file: %s ' % self.config.atlas_file) from ex
-
-    def get_vcenters(self) -> list:
-        """
-        Get all vcenters.
+        Get all vcenters. Raise SystemExit if somethihg goes wrong.
 
         :return: list of interfaces.Vcenter
         """
@@ -42,16 +34,17 @@ class Atlas():
         logger.debug('getting vcenters from atlas...')
 
         results = []
-        for target in self.load_file():
+
+        for target in self.load_data():
             if target['labels']['job'] == 'vcenter':
                 results.append(Vcenter(
                     name=target['labels']['server_name'],
                     address=target['labels']['server_name'],
-                    )
+                )
                 )
         return results
 
-    def get_esxi_hosts(self) -> list:
+    def get_esxi_hosts(self) -> List[Host]:
         """
         Get all esxi-hosts. Returns a list of Host
 
@@ -63,7 +56,7 @@ class Atlas():
         results = []
         vcenters = self.get_vcenters()
 
-        for target in self.load_file():
+        for target in self.load_data():
             if target['labels']['job'] == 'vmware-esxi':
                 name = target['labels']['name']
                 site = target['labels']['site']

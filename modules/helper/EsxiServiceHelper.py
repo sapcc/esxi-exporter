@@ -1,24 +1,32 @@
-from modules.configuration.Configuration import Configuration
+
+from modules.helper.GeneralHelper import GeneralHelper
 from interfaces.host import Host
-from modules.api.Atlas import Atlas
 from modules.api.SshHelper import SshHelper
 
 from threading import Thread
 from queue import Queue
+from typing import List
 
 import logging
-
 
 logger = logging.getLogger('esxi')
 
 
 class EsxiServiceHelper:
 
-    def __init__(self, config: Configuration) -> None:
-        self.atlas = Atlas(config)
-        self.config = config
+    def __init__(self, esxi_username: str, esxi_password: str, monitored_services, max_threads: int) -> None:
+        """
+        Helper providing functionality to query critical service stats of esxi-host
+        """
 
-        self._services = self.config.monitored_serivces
+
+        self.general_helper = GeneralHelper()
+        self.esxi_username = esxi_username
+        self.esxi_password = esxi_password
+        self.max_threads = max_threads
+
+
+        self._services = monitored_services
         command_list = ["/etc/init.d/%s status" %
                         service for service in self._services]
         self._command = ' & '.join(command_list)
@@ -27,10 +35,14 @@ class EsxiServiceHelper:
         self._services = [item.replace('nsx-opsagent', 'opsAgent')
                           for item in self._services]
 
-    def _worker(q: Queue, ssh_username: str, ssh_password: str,
+    def _worker(host_queue: Queue, ssh_username: str, ssh_password: str,
                 command: str, services: list, output: list):
-        while not q.empty():
-            host: Host = q.get()
+        """
+        Multithreaded worker. Used for SSH-Connections to esxi-hosts
+        """
+
+        while not host_queue.empty():
+            host: Host = host_queue.get()
 
             answer = SshHelper.execute_command(
                 host.address,
@@ -46,6 +58,7 @@ class EsxiServiceHelper:
                 output.append(host)
                 continue
 
+            # loop over all critical services and try to find them in the answer
             answer = answer.splitlines()
             for service in services:
                 for line in answer:
@@ -57,21 +70,37 @@ class EsxiServiceHelper:
                         host.services[service] = False
             output.append(host)
 
-    def get_all_service_stats(self) -> list:
+    def get_all_service_stats(self) -> List[Host]:
+        """
+        Get all critical service stats of all listed esxi-hosts.
+
+        :return: List of Host
+        """
+
         # get hosts
-        hosts = self.atlas.get_esxi_hosts()
+        hosts = self.general_helper.get_esxi_hosts()
 
         # get services
-        q = Queue()
-        [q.put(host) for host in hosts]
+        host_queue = Queue()
+        [host_queue.put(host) for host in hosts]
+
+
+        # Explaination of applied multihreading approach:
+        # Imagine 10 threads operating as workers
+        # Each worker gets a shared queue with 'tasks' - in this case a list of hosts to process
+        # All workers operate and take jobs(hosts) from the queue-stack until it is empty.
+        # If empty - the workers will stop and the join releases.
+        # All Python base types are considered thread-safe, so a queue should be safe too.
+        # Since the threads are separated and communication is tricky - a reference to a
+        # thread_safe output variable is passed, where the results will be stored in.
 
         threads = []
         output = []
-        for i in range(self.config.ssh_max_threads):
+        for i in range(self.max_threads):
             t = Thread(target=EsxiServiceHelper._worker, args=(
-                q,
-                self.config.esxi_user,
-                self.config.esxi_password,
+                host_queue,
+                self.esxi_username,
+                self.esxi_password,
                 self._command,
                 self._services,
                 output

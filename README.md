@@ -23,3 +23,14 @@ This exporter contains a `critical service collector` and a `overall state colle
 **Command-line arguments**
 - `-v` sets logger to info output
 - `-vv` sets logger to debug output
+
+
+## Structure
+
+- All collectors inherit from the `BaseCollector`
+- _Interfaces_ are used to provide a common exchange data type. Eg it defines how a _Host_ and a _Vcenter_ should be passed around. (the term _interface_ is used as in _Angular/Typescript_ vocabular)  
+- _Modules_ provide shared core functionality
+    - _api_ &rarr; very basic functionality. Enables connectivity to ESXi-hosts etc. They are designed in an interchangeable manner. See helpers which are some kind of wrapper.
+    - _helper_ &rarr; Are some kind of wrapper which combine different APIs in order to provide a unified interface. If an api-file gets interchanged, the helper/wrapper still expects the same format as before. For instance if you want to use a different SSH-library than paramiko then change the ssh-api-file in the api folder and make sure it still returns the console output of the remote host as before.
+    - _configuration_ &rarr; some small models that collect configuration from yaml, environment and commandline arguments in order to provide configuration in a dynamic and scoped manner to specific parts of the exporter.
+- exporter.py is the entry point. It dynamicly invokes collectors based on the configuration and sets up the whole program.
