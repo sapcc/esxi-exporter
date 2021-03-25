@@ -124,39 +124,29 @@ class VcenterConnection:
         Get the overall status of all esxi-hosts from vcenter.
         Status can be green, yellow or red.
 
-        :return: a list of interfaces.Host or None
+        :return: a list of interfaces.Host
         """
 
-        try:
-            self.login()
-            esxi = self._get_obj(self.api.content.rootFolder, [vim.HostSystem])
-            pc = self.api.content.propertyCollector
-            filter_spec = self._create_filter_spec(
-                esxi, ['overallStatus', 'name'])
-            options = vmodl.query.PropertyCollector.RetrieveOptions()
-            result = pc.RetrievePropertiesEx([filter_spec], options)
+        self.login()
+        esxi = self._get_obj(self.api.content.rootFolder, [vim.HostSystem])
+        pc = self.api.content.propertyCollector
+        filter_spec = self._create_filter_spec(
+            esxi, ['overallStatus', 'name'])
+        options = vmodl.query.PropertyCollector.RetrieveOptions()
+        result = pc.RetrievePropertiesEx([filter_spec], options)
+        res = []
+        vcenter = Vcenter(name=self.host, address=self.host)
+        state_map = {
+            'green': 2, 'yellow': 1, 'red': 0,
+        }
+        for item in result.objects:
+            name = [v.val for v in item.propSet if v.name == 'name'][0]
+            status = [v.val for v in item.propSet if v.name ==
+                      'overallStatus'][0]
+            host = Host(name=name, address=name, overall_status=state_map[status],
+                        vcenter=vcenter)
+            res.append(host)
+        return res
 
-            res = []
-            vcenter = Vcenter(name=self.host, address=self.host)
-
-            state_map = {
-                'green': 2, 'yellow': 1, 'red': 0,
-            }
-
-            for item in result.objects:
-                name = [v.val for v in item.propSet if v.name == 'name'][0]
-                status = [v.val for v in item.propSet if v.name ==
-                          'overallStatus'][0]
-                host = Host(name=name, address=name, overall_status=state_map[status],
-                            vcenter=vcenter)
-                res.append(host)
-
-            return res
-
-        except Exception as ex:
-            logger.error('Vcenter: unknown error: %s' % str(ex))
-            return None
-
-        finally:
-            self.disconnect()
+        self.disconnect()
 

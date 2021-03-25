@@ -16,13 +16,7 @@ class Atlas():
         self.re_site = re.compile(r'([A-Z]{2}\-[A-Z]{2}\-[0-9])[a-z]', re.IGNORECASE)
 
     def load_data(self):
-        atlas_data = FileHelper.get_json_dict(self.atlas_file)
-
-        if atlas_data is None:
-            logger.error('Could not read atlas file: %s' % self.atlas_file)
-            raise SystemExit('Could not read atlas file.')
-
-        return atlas_data
+        return FileHelper.get_json_dict(self.atlas_file)
 
     def get_vcenters(self) -> List[Vcenter]:
         """

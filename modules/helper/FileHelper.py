@@ -22,13 +22,9 @@ class FileHelper:
         :param path: the file path
         :return: return file content as string or None
         """
-        try:
-            with open(path, 'rt', encoding='utf8') as f:
-                data = f.read()
-            return data
-        except IOError as ex:
-            logger.error('Could not open file: %s: %s' % (path, str(ex)))
-            return None
+        with open(path, 'rt', encoding='utf8') as f:
+            data = f.read()
+        return data
 
     @staticmethod
     @lru_cache(maxsize=1)
@@ -37,18 +33,12 @@ class FileHelper:
         Load yaml file as dictionary
 
         :param path: The path to the yaml file.
-        :return: the yaml-file parsed to a dict, returns None in case of an error.
+        :return: the yaml-file parsed to a dict
         """
-        try:
-            with open(path, 'rt', encoding='utf8') as f:
-                data = yaml.safe_load(f)
-            return data
-        except IOError as ex:
-            logger.error('Could not open yaml file: %s: %s' % (path, str(ex)))
-            return None
-        except yaml.YAMLError:
-            logger.error('Yaml file is faulty: %s' % path)
-            return None
+        with open(path, 'rt', encoding='utf8') as f:
+            data = yaml.safe_load(f)
+        return data
+
 
     @staticmethod
     def get_json_dict(path: str) -> dict:
@@ -56,16 +46,9 @@ class FileHelper:
         Load json file as dictionary.
 
         :param path: The path to the json file.
-        :return: the json-file parsed to a dict, returns None in case of an error.
+        :return: the json-file parsed to a dict
         """
 
-        try:
-            with open(path, 'rt', encoding='utf8') as f:
-                data = json.load(f)
-            return data
-        except IOError as ex:
-            logger.error('Could not open json file: %s: %s' % (path, str(ex)))
-            return None
-        except json.JSONDecodeError:
-            logger.error('Json file is faulty: %s' % path)
-            return None
+        with open(path, 'rt', encoding='utf8') as f:
+            data = json.load(f)
+        return data

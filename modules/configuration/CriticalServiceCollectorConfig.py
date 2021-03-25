@@ -9,19 +9,14 @@ logger = logging.getLogger('esxi')
 class CriticalServiceCollectorConfig:
 
     def __init__(self):
-
-        try:
-            self.esxi_username = os.environ['ESXI_USER']
-            self.esxi_password = os.environ['ESXI_PASSWORD']
-        except KeyError as ex:
-            logger.critical('Missing environment variable: %s' % str(ex))
-            raise SystemExit() from ex
+        self.esxi_username = os.environ['ESXI_USER']
+        self.esxi_password = os.environ['ESXI_PASSWORD']
 
         yaml_dict = FileHelper.get_yaml_dict('config.yaml')
-        self.max_threads = yaml_dict.setdefault('collectors', {}).setdefault('critical_service_collector',
-                                                                             {}).setdefault('max_threads', 10)
-        self.critical_services = yaml_dict.setdefault('collectors', {}).setdefault('critical_service_collector',
-                                                                             {}).setdefault('services', [])
+        self.max_threads = yaml_dict.get('collectors', {}).get('critical_service_collector',
+                                                               {}).get('max_threads', 10)
+        self.critical_services = yaml_dict.get('collectors', {}).get('critical_service_collector',
+                                                                     {}).get('services', [])
 
         if not len(self.critical_services) > 0:
             logger.critical('No critical services specified')

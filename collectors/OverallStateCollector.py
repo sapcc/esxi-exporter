@@ -27,10 +27,7 @@ class OverallStateCollector(BaseCollector):
         metric = GaugeMetricFamily('esxi_overall_status', 'green=2/yellow=1/red=0',
                                    labels=['vcenter', 'hostsystem'])
 
-        esxi_stats = self.vcenter_helper.get_esxi_overall_stats()
-
-        if esxi_stats is not None:
-            for host in esxi_stats:
-                metric.add_metric([host.vcenter.name, host.name], host.overall_status)
+        for host in self.vcenter_helper.get_esxi_overall_stats():
+            metric.add_metric([host.vcenter.name, host.name], host.overall_status)
 
         yield metric
