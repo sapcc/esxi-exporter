@@ -52,19 +52,6 @@ class VcenterConnection:
             logger.error(message)
             raise
 
-    def is_alive(self) -> bool:
-        """
-        Checks if there is a working connection to a vcenter.
-
-        :return: Boolean, is there a vCenter connection?
-        """
-        if self.api is None:
-            return False
-        try:
-            self.api.CurrentTime()
-            return True
-        except (vim.fault.NotAuthenticated, http.client.RemoteDisconnected):
-            return False
 
     def disconnect(self) -> None:
         """
