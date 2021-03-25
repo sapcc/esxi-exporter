@@ -15,9 +15,8 @@ class OverallStateCollector(BaseCollector):
         Descripe is used to prevent calling collect() method at program startup.
         So only a description from describe() will be invoked.
         """
-        metric = GaugeMetricFamily('esxi_overall_status', 'green=2/yellow=1/red=0',
+        yield GaugeMetricFamily('esxi_overall_status', 'green=2/yellow=1/red=0',
                                    labels=['vcenter', 'hostsystem'])
-        yield metric
 
     def collect(self):
         """

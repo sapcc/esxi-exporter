@@ -13,7 +13,7 @@ logger = logging.getLogger('esxi')
 
 class EsxiServiceHelper:
 
-    def __init__(self, esxi_username: str, esxi_password: str, monitored_services, max_threads: int) -> None:
+    def __init__(self, esxi_username: str, esxi_password: str, monitored_services, max_threads: int):
         """
         Helper providing functionality to query critical service stats of esxi-host
         """

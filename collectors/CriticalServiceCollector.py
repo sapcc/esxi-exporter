@@ -16,12 +16,10 @@ class CriticalServiceCollector(BaseCollector):
         Descripe is used to prevent calling collect() method at program startup.
         So only a description from describe() will be invoked.
         """
-        metric = GaugeMetricFamily(
+        yield GaugeMetricFamily(
             'esxi_critical_service_status',
             'running=1/stopped=0',
             labels=['site', 'hostsystem', 'service'])
-
-        yield metric
 
     def collect(self):
         """
