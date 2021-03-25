@@ -50,9 +50,6 @@ class EsxiServiceHelper:
 
             host.services = {}
             if answer is None:
-                host.services = {k: False for k in services}
-                # Maybe add some info to host that something is wrong?
-                output.append(host)
                 continue
 
             # loop over all critical services and try to find them in the answer
