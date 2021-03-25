@@ -4,7 +4,7 @@ from interfaces.vcenter import Vcenter
 class Host:
 
     def __init__(self, name: str, address: str, site=None, vcenter: Vcenter = None, server_state: str = None,
-                 overall_status: str = None) -> None:
+                 overall_status: str = None):
         """
         Represents a ESXi HostSystem
 

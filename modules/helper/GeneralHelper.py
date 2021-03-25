@@ -11,7 +11,7 @@ class GeneralHelper:
     The general helper provides functionality of shared APIs.
     """
 
-    def __init__(self, ) -> None:
+    def __init__(self):
         config = GeneralHelperConfig()
         self.atlas = Atlas(config.atlas_file)
 

@@ -1,6 +1,6 @@
 class Vcenter:
 
-    def __init__(self, name: str, address: str) -> None:
+    def __init__(self, name: str, address: str):
         """
         Represents a vcenter
 

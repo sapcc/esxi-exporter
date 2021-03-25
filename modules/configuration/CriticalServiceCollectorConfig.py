@@ -20,4 +20,4 @@ class CriticalServiceCollectorConfig:
 
         if not len(self.critical_services) > 0:
             logger.critical('No critical services specified')
-            raise ValueError('No critical servicbes specified')
+            raise ValueError('No critical services specified')

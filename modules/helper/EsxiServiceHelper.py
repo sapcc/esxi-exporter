@@ -1,4 +1,3 @@
-
 from modules.helper.GeneralHelper import GeneralHelper
 from interfaces.host import Host
 from modules.api.SshHelper import SshHelper
@@ -19,12 +18,10 @@ class EsxiServiceHelper:
         Helper providing functionality to query critical service stats of esxi-host
         """
 
-
         self.general_helper = GeneralHelper()
         self.esxi_username = esxi_username
         self.esxi_password = esxi_password
         self.max_threads = max_threads
-
 
         self._services = monitored_services
         command_list = ["/etc/init.d/%s status" %
@@ -83,7 +80,6 @@ class EsxiServiceHelper:
         # get services
         host_queue = Queue()
         [host_queue.put(host) for host in hosts]
-
 
         # Explaination of applied multihreading approach:
         # Imagine 10 threads operating as workers
