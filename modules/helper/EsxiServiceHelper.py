@@ -1,5 +1,5 @@
-from modules.helper.GeneralHelper import GeneralHelper
 from interfaces.host import Host
+from modules.api.Atlas import Atlas
 from modules.api.SshHelper import SshHelper
 
 from threading import Thread
@@ -13,12 +13,12 @@ logger = logging.getLogger('esxi')
 
 class EsxiServiceHelper:
 
-    def __init__(self, esxi_username: str, esxi_password: str, monitored_services, max_threads: int):
+    def __init__(self, atlas: Atlas, esxi_username: str, esxi_password: str, monitored_services, max_threads: int):
         """
         Helper providing functionality to query critical service stats of esxi-host
         """
 
-        self.general_helper = GeneralHelper()
+        self.atlas = atlas
         self.esxi_username = esxi_username
         self.esxi_password = esxi_password
         self.max_threads = max_threads
@@ -75,7 +75,7 @@ class EsxiServiceHelper:
         """
 
         # get hosts
-        hosts = self.general_helper.get_esxi_hosts()
+        hosts = self.atlas.get_esxi_hosts()
 
         # get services
         host_queue = Queue()

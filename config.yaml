@@ -1,4 +1,5 @@
 port: 9666
+ssl_verify: false
 collectors:
   overall_state_collector:
     enabled: true

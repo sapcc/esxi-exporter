@@ -1,5 +1,5 @@
 from interfaces.host import Host
-from modules.helper.GeneralHelper import GeneralHelper
+from modules.api.Atlas import Atlas
 from modules.api.VcenterConnection import VcenterConnection
 
 from typing import List
@@ -7,12 +7,13 @@ from typing import List
 
 class VCenterHelper:
 
-    def __init__(self, vcenter_username: str, vcenter_password):
-        self.general_helper = GeneralHelper()
+    def __init__(self, atlas: Atlas, vcenter_username: str, vcenter_password, verify_ssl=False):
+        self.atlas = atlas
         self.vcenter_username = vcenter_username
         self.vcenter_password = vcenter_password
+        self.verify_ssl = verify_ssl
 
-    def get_esxi_overall_stats(self) -> List[Host]:
+    def get_esxi_overall_stats_for_all_vcenters(self) -> List[Host]:
         """
         Collects the overall state of esxi-hosts as displayed in the vcenter.
 
@@ -20,12 +21,14 @@ class VCenterHelper:
         """
 
         results = list()
-        for vcenter in self.general_helper.get_vcenters():
+        for vcenter in self.atlas.get_vcenters():
             vc_conn = VcenterConnection(
                 vcenter.address,
                 self.vcenter_username,
-                self.vcenter_password
+                self.vcenter_password,
+                self.verify_ssl
             )
+
             results.extend(vc_conn.get_esxi_overall_stats())
 
         return results

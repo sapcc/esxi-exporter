@@ -7,8 +7,9 @@ from modules.helper.VCenterHelper import VCenterHelper
 class OverallStateCollector(BaseCollector):
 
     def __init__(self):
+        super(OverallStateCollector, self).__init__()
         config = OverallStateCollectorConfig()
-        self.vcenter_helper = VCenterHelper(config.vcenter_username, config.vcenter_password)
+        self.vcenter_helper = VCenterHelper(self.atlas, config.vcenter_username, config.vcenter_password, self.verify_ssl)
 
     def describe(self):
         """
@@ -16,7 +17,7 @@ class OverallStateCollector(BaseCollector):
         So only a description from describe() will be invoked.
         """
         yield GaugeMetricFamily('esxi_overall_status', 'green=2/yellow=1/red=0',
-                                   labels=['vcenter', 'hostsystem'])
+                                labels=['vcenter', 'site', 'hostsystem'])
 
     def collect(self):
         """
@@ -24,9 +25,9 @@ class OverallStateCollector(BaseCollector):
         Vcenter-mob refers to its managed-object-browser.
         """
         metric = GaugeMetricFamily('esxi_overall_status', 'green=2/yellow=1/red=0',
-                                   labels=['vcenter', 'hostsystem'])
+                                   labels=['vcenter', 'site', 'hostsystem'])
 
-        for host in self.vcenter_helper.get_esxi_overall_stats():
-            metric.add_metric([host.vcenter.name, host.name], host.overall_status)
+        for host in self.vcenter_helper.get_esxi_overall_stats_for_all_vcenters():
+            metric.add_metric([host.vcenter.name, host.site, host.name], host.overall_status)
 
         yield metric

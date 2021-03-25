@@ -36,22 +36,22 @@ class VcenterConnection:
             logger.warning('vCenter connection with ssl disabled: %s' % host)
             self._connect_class = SmartConnectNoSSL
 
-    def login(self) -> None:
+    def login(self) -> bool:
         logger.debug('vCenter logging in: %s' % self.host)
         try:
             self.api = self._connect_class(protocol='https', host=self.host,
                                            user=self.user, pwd=self.password)
             logger.debug('successfully logged into vCenter: %s' % self.host)
+            return True
 
         except socket.gaierror:
             message = 'Vcenter: DNS error, could not resolve name: %s' % self.host
             logger.error(message)
-            raise
+            return False
         except vim.fault.InvalidLogin as ex:
             message = 'Vcenter: wrong credentials: %s' % self.host
             logger.error(message)
-            raise
-
+            return False
 
     def disconnect(self) -> None:
         """
@@ -114,26 +114,37 @@ class VcenterConnection:
         :return: a list of interfaces.Host
         """
 
-        self.login()
-        esxi = self._get_obj(self.api.content.rootFolder, [vim.HostSystem])
-        pc = self.api.content.propertyCollector
-        filter_spec = self._create_filter_spec(
-            esxi, ['overallStatus', 'name'])
-        options = vmodl.query.PropertyCollector.RetrieveOptions()
-        result = pc.RetrievePropertiesEx([filter_spec], options)
-        res = list()
-        vcenter = Vcenter(name=self.host, address=self.host)
-        state_map = {
-            'green': 2, 'yellow': 1, 'red': 0,
-        }
-        for item in result.objects:
-            name = [v.val for v in item.propSet if v.name == 'name'][0]
-            status = [v.val for v in item.propSet if v.name ==
-                      'overallStatus'][0]
-            host = Host(name=name, address=name, overall_status=state_map[status],
-                        vcenter=vcenter)
-            res.append(host)
-        return res
+        if self.login():
+            # prepare property collector and get results
+            esxi = self._get_obj(self.api.content.rootFolder, [vim.HostSystem])
+            pc = self.api.content.propertyCollector
+            filter_spec = self._create_filter_spec(
+                esxi, ['overallStatus', 'name'])
+            options = vmodl.query.PropertyCollector.RetrieveOptions()
+            result = pc.RetrievePropertiesEx([filter_spec], options)
 
-        self.disconnect()
+            res = list()
+            vcenter = Vcenter(name=self.host, address=self.host)
 
+            state_map = {
+                'green': 2, 'yellow': 1, 'red': 0,
+            }
+
+            # parse property collector
+            for item in result.objects:
+                name = [v.val for v in item.propSet if v.name == 'name']
+                status = [v.val for v in item.propSet if v.name == 'overallStatus']
+                if len(name) > 0 or len(status) > 0:
+                    name = name[0]
+                    status = status[0]
+                else:
+                    continue
+
+                host = Host(name=name, address=name, overall_status=state_map[status],
+                            vcenter=vcenter, site=vcenter.site)
+                res.append(host)
+
+            self.disconnect()
+            return res
+
+        return list()
