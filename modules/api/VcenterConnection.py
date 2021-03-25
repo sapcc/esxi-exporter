@@ -94,7 +94,7 @@ class VcenterConnection:
         if not isinstance(prop, list):
             prop = [prop]
 
-        objSpecs = []
+        objSpecs = list()
         for host in esxi_hosts:
             objSpec = vmodl.query.PropertyCollector.ObjectSpec(obj=host)
             objSpecs.append(objSpec)
@@ -121,7 +121,7 @@ class VcenterConnection:
             esxi, ['overallStatus', 'name'])
         options = vmodl.query.PropertyCollector.RetrieveOptions()
         result = pc.RetrievePropertiesEx([filter_spec], options)
-        res = []
+        res = list()
         vcenter = Vcenter(name=self.host, address=self.host)
         state_map = {
             'green': 2, 'yellow': 1, 'red': 0,

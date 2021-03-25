@@ -90,8 +90,8 @@ class EsxiServiceHelper:
         # Since the threads are separated and communication is tricky - a reference to a
         # thread_safe output variable is passed, where the results will be stored in.
 
-        threads = []
-        output = []
+        threads = list()
+        output = list()
         for i in range(self.max_threads):
             t = Thread(target=EsxiServiceHelper._worker, args=(
                 host_queue,

@@ -19,7 +19,7 @@ class VCenterHelper:
         :return: List of Host
         """
 
-        results = []
+        results = list()
         for vcenter in self.general_helper.get_vcenters():
             vc_conn = VcenterConnection(
                 vcenter.address,

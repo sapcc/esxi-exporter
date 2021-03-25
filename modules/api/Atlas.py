@@ -27,7 +27,7 @@ class Atlas():
 
         logger.debug('getting vcenters from atlas...')
 
-        results = []
+        results = list()
 
         for target in self.load_data():
             if target['labels']['job'] == 'vcenter':
@@ -47,7 +47,7 @@ class Atlas():
 
         logger.debug('getting esxi-hosts from atlas...')
 
-        results = []
+        results = list()
         vcenters = self.get_vcenters()
 
         for target in self.load_data():
