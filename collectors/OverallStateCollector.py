@@ -9,7 +9,7 @@ class OverallStateCollector(BaseCollector):
     def __init__(self):
         super().__init__()
         config = OverallStateCollectorConfig()
-        self.vcenter_helper = VCenterHelper(self.atlas, config.vcenter_username, config.vcenter_password, self.verify_ssl)
+        self.vcenter_helper = VCenterHelper(self.atlas, config.vcenter_username, config.vcenter_password, config.vcenter_master_password, self.verify_ssl)
 
     def describe(self):
         """

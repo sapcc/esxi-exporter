@@ -6,6 +6,7 @@ from pyVim.connect import SmartConnect, SmartConnectNoSSL, Disconnect
 
 from typing import List
 
+import master_password
 import logging
 import socket
 
@@ -14,27 +15,45 @@ logger = logging.getLogger('esxi-exporter')
 
 
 class VcenterConnection:
-    def __init__(self, host: str, user: str, password: str, verify_ssl: bool = False):
+    def __init__(self, host: str, user: str, password: str, mpw: str = None, verify_ssl: bool = False):
         """
         Provides functionality to fetch overall state of esxi host-systems.
 
         :param host: The url to the vcenter without https. You must use url not
         ip-address.
-        :param user: The username used to login
-        :param password: The password used to login
+        :param user: The username used to login.
+        :param password: The password used to login.
+        :param mpw: Alternative to normal password. Uses master_password mechanism and has precedence.
         :param verify_ssl: Should ssl certificates be verified? Default = False.
         """
 
         self.api = None
         self.host = host
         self.user = user
-        self.password = password
+        self.password = self.choose_password(password, mpw)
         self.verify_ssl = verify_ssl
         if verify_ssl:
             self._connect_class = SmartConnect
         else:
             logger.warning('vCenter connection with ssl disabled: %s' % host)
             self._connect_class = SmartConnectNoSSL
+
+    def choose_password(self, password, mpw) -> str:
+        """
+        Returns vcenter password. Master_password has precedence.
+        One param may be None.
+
+        :param password: Normal vcenter password.
+        :param mpw: if not None it has precedence
+        :return: password
+        """
+        if mpw is not None:
+            # vcenter does not support slash char '/'
+            return master_password.MPW(self.user, mpw).password(self.host).replace('/', '')
+        elif password is not None:
+            return password
+        else:
+            raise ValueError('No vcenter password provided')
 
     def login(self) -> bool:
         logger.debug('vCenter logging in: %s' % self.host)

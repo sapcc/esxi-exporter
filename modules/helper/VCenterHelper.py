@@ -7,10 +7,11 @@ from typing import List
 
 class VCenterHelper:
 
-    def __init__(self, atlas: Atlas, vcenter_username: str, vcenter_password, verify_ssl=False):
+    def __init__(self, atlas: Atlas, vcenter_username: str, vcenter_password,vcenter_master_password, verify_ssl=False):
         self.atlas = atlas
         self.vcenter_username = vcenter_username
         self.vcenter_password = vcenter_password
+        self.vcenter_master_password = vcenter_master_password
         self.verify_ssl = verify_ssl
 
     def get_esxi_overall_stats_for_all_vcenters(self) -> List[Host]:
@@ -26,6 +27,7 @@ class VCenterHelper:
                 vcenter.address,
                 self.vcenter_username,
                 self.vcenter_password,
+                self.vcenter_master_password,
                 self.verify_ssl
             )
 

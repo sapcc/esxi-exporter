@@ -16,6 +16,7 @@ This exporter contains a `critical service collector` and a `overall state colle
 **Environment variables**
 - `VCENTER_USER` the vCenter username
 - `VCENTER_PASSWORD` the vCenter password
+- `VCENTER_MPW` if set, master_password mechanism will be used.
 - `ESXI_USER` the ESXi-host ssh username
 - `ESXI_PASSWORD` the ESXi-host ssh password
 
