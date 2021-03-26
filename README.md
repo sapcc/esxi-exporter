@@ -30,7 +30,6 @@ This exporter contains a `critical service collector` and a `overall state colle
 ```json
 [
   {
-    "targets": [],
     "labels": {
       "job": "vmware-esxi or vcenter",
       "name": "",
