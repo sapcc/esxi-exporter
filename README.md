@@ -19,7 +19,7 @@ This exporter contains a `critical service collector` and a `overall state colle
 - `VCENTER_MPW` if set, master_password mechanism will be used.
 - `ESXI_USER` the ESXi-host ssh username
 - `ESXI_PASSWORD` the ESXi-host ssh password
-- `ATLAS_FILE` the path to the atlas file containing esxi_hosts and vcenters
+- `ATLAS_FILE` the path to the [atlas file](https://github.com/sapcc/atlas) containing esxi_hosts and vcenters
 
 **Command-line arguments**
 - `-v` sets logger to info output
