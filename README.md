@@ -18,7 +18,6 @@ This exporter contains a `critical service collector` and a `overall state colle
 - `VCENTER_PASSWORD` the vCenter password
 - `ESXI_USER` the ESXi-host ssh username
 - `ESXI_PASSWORD` the ESXi-host ssh password
-- `VCENTER_URL` the vCenter url without `https://`
 
 **Command-line arguments**
 - `-v` sets logger to info output
