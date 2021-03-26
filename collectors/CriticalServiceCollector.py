@@ -7,7 +7,7 @@ from modules.helper.EsxiServiceHelper import EsxiServiceHelper
 class CriticalServiceCollector(BaseCollector):
 
     def __init__(self):
-        super(CriticalServiceCollector, self).__init__()
+        super().__init__()
         config = CriticalServiceCollectorConfig()
         self.esxi_helper = EsxiServiceHelper(self.atlas, config.esxi_username, config.esxi_password, config.critical_services,
                                              config.max_threads)

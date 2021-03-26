@@ -7,7 +7,7 @@ from modules.helper.VCenterHelper import VCenterHelper
 class OverallStateCollector(BaseCollector):
 
     def __init__(self):
-        super(OverallStateCollector, self).__init__()
+        super().__init__()
         config = OverallStateCollectorConfig()
         self.vcenter_helper = VCenterHelper(self.atlas, config.vcenter_username, config.vcenter_password, self.verify_ssl)
 

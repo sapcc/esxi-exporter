@@ -2,10 +2,9 @@ from interfaces.host import Host
 from modules.api.Atlas import Atlas
 from modules.api.SshHelper import SshHelper
 
-from threading import Thread
-from queue import Queue
 from typing import List
 
+import concurrent.futures
 import logging
 
 logger = logging.getLogger('esxi')
@@ -32,37 +31,37 @@ class EsxiServiceHelper:
         self._services = [item.replace('nsx-opsagent', 'opsAgent')
                           for item in self._services]
 
-    def _worker(host_queue: Queue, ssh_username: str, ssh_password: str,
-                command: str, services: list, output: list):
+    def _concurrent_fetch_host_services(host: Host, ssh_username: str, ssh_password: str,
+                                        command: str, services: list, output: list):
         """
-        Multithreaded worker. Used for SSH-Connections to esxi-hosts
+        Multithreaded worker for concurrent ThreadPoolExecutor.
+        Used to get services via SSH-Connections to esxi-hosts.
         """
 
-        while not host_queue.empty():
-            host: Host = host_queue.get()
+        response = SshHelper.execute_ssh_command(
+            host.address,
+            ssh_username,
+            ssh_password,
+            command
+        )
 
-            answer = SshHelper.execute_command(
-                host.address,
-                ssh_username,
-                ssh_password,
-                command
-            )
+        host.services = {}  # init / reset services
+        if response is None:
+            logger.error('Could not fetch any services for host: %s' % host.name)
+            return
 
-            host.services = {}
-            if answer is None:
-                continue
-
-            # loop over all critical services and try to find them in the answer
-            answer = answer.splitlines()
-            for service in services:
-                for line in answer:
-                    if service in line and 'is running' in line:
-                        host.services[service] = True
-                        # check next service
-                        break
-                    else:
-                        host.services[service] = False
-            output.append(host)
+        # loop over all critical services and try to find them in the response
+        response = response.splitlines()
+        for service in services:
+            for line in response:
+                if service in line and 'is running' in line:
+                    host.services[service] = True
+                    # check next service
+                    break
+                else:
+                    host.services[service] = False
+                    
+        output.append(host)
 
     def get_all_service_stats(self) -> List[Host]:
         """
@@ -74,33 +73,18 @@ class EsxiServiceHelper:
         # get hosts
         hosts = self.atlas.get_esxi_hosts()
 
-        # get services
-        host_queue = Queue()
-        [host_queue.put(host) for host in hosts]
-
-        # Explaination of applied multihreading approach:
-        # Imagine 10 threads operating as workers
-        # Each worker gets a shared queue with 'tasks' - in this case a list of hosts to process
-        # All workers operate and take jobs(hosts) from the queue-stack until it is empty.
-        # If empty - the workers will stop and the join releases.
-        # All Python base types are considered thread-safe, so a queue should be safe too.
-        # Since the threads are separated and communication is tricky - a reference to a
-        # thread_safe output variable is passed, where the results will be stored in.
-
-        threads = list()
+        # Use ThreadPoolExecuter and store results in output
         output = list()
-        for _ in range(self.max_threads):
-            t = Thread(target=EsxiServiceHelper._worker,  args=(
-                host_queue,
-                self.esxi_username,
-                self.esxi_password,
-                self._command,
-                self._services,
-                output
-            ))
-            threads.append(t)
-            t.start()
-
-        [t.join() for t in threads]
+        with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_threads) as executor:
+            for host in hosts:
+                executor.submit(
+                    EsxiServiceHelper._concurrent_fetch_host_services,
+                    host,
+                    self.esxi_username,
+                    self.esxi_password,
+                    self._command,
+                    self._services,
+                    output
+                )
 
         return output
