@@ -7,7 +7,7 @@ from typing import List
 
 class VCenterHelper:
 
-    def __init__(self, atlas: Atlas, vcenter_username: str, vcenter_password,vcenter_master_password, verify_ssl=False):
+    def __init__(self, atlas: Atlas, vcenter_username: str, vcenter_password, vcenter_master_password, verify_ssl=False):
         self.atlas = atlas
         self.vcenter_username = vcenter_username
         self.vcenter_password = vcenter_password
