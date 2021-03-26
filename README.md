@@ -32,14 +32,13 @@ This exporter contains a `critical service collector` and a `overall state colle
   {
     "targets": [],
     "labels": {
-      "job": "vmware-esxi", // or vcenter
+      "job": "vmware-esxi or vcenter",
       "name": "",
       "server_name": "",
       "status": "Active",
       "site": ""
     }
   },
-  {...}
 ]
 ```
 
