@@ -26,6 +26,7 @@ This exporter contains a `critical service collector` and a `overall state colle
 - `-vv` sets logger to debug output
 
 ## Atlas
+This is an atlas scheme reduced to the information required by this exporter.
 
 ```json
 [
