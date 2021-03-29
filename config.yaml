@@ -1,0 +1,16 @@
+port: 9666
+ssl_verify: false
+collectors:
+  overall_state_collector:
+    enabled: true
+  critical_service_collector:
+    enabled: true
+    max_threads: 10
+    services:
+      - hostd
+      - nsx-opsagent
+      - nsx-proxy
+      - nsxa
+      - ntpd
+      - vpxa
+      - vvold

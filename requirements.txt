@@ -1,0 +1,6 @@
+pyvmomi==7.0.1
+paramiko==2.7.2
+prometheus-client==0.9.0
+requests==2.22.0
+PyYAML==5.3.1
+master-password==1.3.0
