@@ -63,7 +63,8 @@ This is an atlas scheme reduced to the information required by this exporter.
 
 1. Prometheus makes a HTTP-GET request on the exporter.
 2. The Exporter starts to collect information from ESXi-Hosts and the vCenter
-3. Finally a `Gauge-Metric` is build and will be sent back.
+3. Finally a `Gauge-Metric` is generated and will be sent back.
+
 
 
 **Structure of the project**
