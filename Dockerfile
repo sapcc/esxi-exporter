@@ -12,4 +12,3 @@ RUN apk add --no-cache gcc musl-dev python3-dev libffi-dev openssl-dev cargo mak
 
 
 WORKDIR exporter/
-CMD ["python3", "exporter.py"]
