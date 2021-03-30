@@ -68,7 +68,7 @@ This is an atlas scheme reduced to the information required by this exporter.
 
 
 **Structure of the project**
-![project structure](assets/2021-03-30-10-29-08.png)
+![Project Structure](assets/2021-03-30-13-54-06.png)
 
 - The BaseCollector enforces `collect()` and `describe()`
   - All collectors inherit of the BaseCollector
