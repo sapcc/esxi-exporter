@@ -78,7 +78,8 @@ This is an atlas scheme reduced to the information required by this exporter.
   - A host has a name, address, services, status
   - A vCenter looks similar
 - The config models provide modular configuration. As seen below there are different sources which will be loaded. Each config models fits to a part in the program.
-  - The Exporter config provides general information while the critical service collector config is very specific.
+  - The exporter config provides general information while the critical service collector config is very specific.
+
   - Each model uses the source on its own to get data.
   - Keep in mind that the BaseCollector also has some attributes that are used by all collectors.
 
