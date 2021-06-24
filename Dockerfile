@@ -1,15 +1,13 @@
-#FROM python:3-alpine
-FROM keppel.eu-de-1.cloud.sap/ccloud-dockerhub-mirror/library/python:3-alpine
-#FROM python:3-slim
+FROM keppel.eu-de-1.cloud.sap/ccloud-dockerhub-mirror/library/alpine:latest
 
 # https://cryptography.io/en/latest/installation.html#alpine
-ADD . exporter
-RUN apk add --no-cache gcc musl-dev python3-dev libffi-dev openssl-dev cargo make ca-certificates && \
-    apk upgrade && \ 
-    pip install --upgrade --no-cache-dir pip && \
-    pip install --no-cache-dir -r  exporter/requirements.txt && \
-    apk del gcc musl-dev python3-dev libffi-dev openssl-dev cargo make 
+RUN apk --update add --no-cache python3 openssl bash git gcc musl-dev python3-dev libffi-dev openssl-dev cargo make ca-certificates py3-pip && \
+    apk upgrade
+RUN git config --global http.sslVerify false
+RUN git clone https://github.com/sapcc/esxi-exporter
+RUN pip3 install --upgrade pip
 
+ADD . esxi-exporter/
+RUN pip3 install --upgrade -r esxi-exporter/requirements.txt
 
-WORKDIR exporter/
-CMD ["python3", "exporter.py"]
+WORKDIR esxi-exporter/

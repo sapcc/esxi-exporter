@@ -28,8 +28,8 @@ class SshHelper:
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
         try:
-            client.connect(hostname=address, username=user, password=password, banner_timeout=0.5)
-            stdin, stdout, stderr = client.exec_command(command, timeout=1)
+            client.connect(hostname=address, username=user, password=password)
+            stdin, stdout, stderr = client.exec_command(command)
 
         except socket.gaierror as ex:
             logger.error("SSH: DNS error. Could not locate %s" % address)
