@@ -15,7 +15,7 @@ class BaseCollector(ABC):
         atlas_file = os.environ['ATLAS_FILE']
         self.atlas = Atlas(atlas_file)
 
-        yaml_dict = FileHelper.get_yaml_dict('config.yaml')
+        yaml_dict = FileHelper.get_yaml_dict(os.environ['CONFIG_FILE'])
         self.verify_ssl = yaml_dict.get('verify_ssl', True)
 
     @abstractmethod
