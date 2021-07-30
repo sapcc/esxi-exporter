@@ -21,7 +21,7 @@ class ExporterConfig:
         else:
             raise ValueError('Console output flag passed by argumentparser is out of range[0;2]')
 
-        yaml_dict = FileHelper.get_yaml_dict('config.yaml')
+        yaml_dict = FileHelper.get_yaml_dict(os.environ['CONFIG_FILE'])
         self.port = yaml_dict.get('port', 9666)
         self.enable_cricital_service_collector: bool = yaml_dict.get('collectors', {}).get(
             'critical_service_collector', {}).get('enabled', False)
