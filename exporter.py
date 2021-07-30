@@ -58,7 +58,7 @@ if __name__ == '__main__':
     init_logger(config.logging_mode)
 
     logger.debug('starting http server...')
-    start_http_server(config.port)
+    start_http_server(int(config.port))
 
     collectors = get_enabled_collectors(config)
     for collector in collectors:
